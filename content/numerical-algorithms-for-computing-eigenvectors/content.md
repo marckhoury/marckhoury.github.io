@@ -13,7 +13,7 @@ All of my intuition for positive definite matrices comes from the geometry of th
 
 Now suppose we wanted to compute a single eigenvector of \\(A\\). This problem comes up more often than you'd think and it's a crime that undergraduate linear algebra courses don't often make this clear. The first algorithm that one generally learns, and the only algorithm in this post that I knew as an undergraduate, is an incredibly simple algorithm called Power Iteration. Starting from a random unit vector \\(v\\) we simply compute \\(A^{t}v\\) iteratively. For sufficiently large \\(t\\), \\(A^{t}v\\) converges to the eigenvector corresponding to the largest eigenvalue of \\(A\\), hereafter referred to as the "top eigenvector".
 
-<pre><code>
+<pre><code class="language-python">
 def power_iteration(A, max_iter):
   v = np.random.randn(A.shape[0])
   v /= np.linalg.norm(v) #generate a uniformly random unit vector
@@ -42,7 +42,7 @@ Since \\(\\lambda_1\\) is the largest eigenvalue, the fractions \\(\\left(\\frac
 
 Power Iteration will give us an estimate of the top eigenvector \\(u\_1\\), but what about the other extreme? What if instead we wanted to compute \\(u\_n\\), the eigenvector corresponding to the smallest eigenvalue? It turns out there is a simple modification to the standard Power Iteration algorithm that computes \\(u\_n\\). Instead of multiplying by \\(A\\) at each iteration, multiply by \\(A^{-1}\\). This works because the eigenvalues of \\(A^{-1}\\) are \\(\\frac{1}{\\lambda\_i}\\), and thus the smallest eigenvalue of \\(A\\), \\(\\lambda\_n\\), corresponds to the largest eigenvalue of \\(A^{-1}\\),  \\(\\frac{1}{\\lambda\_{n}}\\). Furthermore the eigenvectors of \\(A^{-1}\\) are unchanged. This slight modification is called Inverse Iteration, and it exhibits the same convergence as Power Iteration, by the same analysis.
 
-<pre><code class="python">
+<pre><code class="language-python">
 def inverse_iteration(A, max_iter):
   v = np.random.randn(A.shape[0])
   v /= np.linalg.norm(v) #generate a uniformly random unit vector
@@ -62,7 +62,7 @@ Note that we don't actually compute \\(A^{-1}\\) explicitly. Instead we compute 
 
 Power Iteration and Inverse Iteration find the eigenvectors at the extremes of the spectrum of \\(A\\), but sometimes we may want to compute a specific eigenvector corresponding to a specific eigenvalue. Suppose that we have an estimate \\(\\mu\\) of an eigenvalue. We can find the eigenvector corresponding to the eigenvalue of \\(A\\) closest to \\(\\mu\\) by a simple modification to Inverse Iteration. Instead of multiplying by \\(A^{-1}\\) at each iteration, multiply by \\((\\mu I\_{n} - A)^{-1}\\) where \\(I\_{n}\\) is the identity matrix. The eigenvalues of \\((\\mu I\_{n} - A)^{-1}\\) are \\(\\frac{1}{\\mu - \\lambda\_{i}}\\). Thus the largest eigenvalue of \\((\\mu I\_{n} - A)^{-1}\\) corresponds to the eigenvalue of \\(A\\) whose value is closest to \\(\\mu\\). By the same analysis as Power Iteration, Shifted Inverse Iteration also exhibits linear convergence. However the better the estimate \\(\\mu\\) the larger \\(\\frac{1}{\\mu - \\lambda\_{i}}\\) and, consequently, the faster the convergence.
 
-<pre><code class="python">
+<pre><code class="language-python">
 def shifted_inverse_iteration(A, mu, max_iter):
   I = np.identity(A.shape[0])
   v = np.random.randn(A.shape[0])
@@ -79,7 +79,7 @@ def shifted_inverse_iteration(A, mu, max_iter):
 	<figcaption><b>Figure 4:</b> The Shifted Inverse Iteration algorithm. In this case we converge to the eigenvector corresponding to the eigenvalue nearest \\(\\mu\\). </figcaption>
 </figure>
 
-Shifted Inverse Iteration converges quickly if a good estimate of the target eigenvalue is available. However if \\(\mu\\) is a poor approximation of the desired eigenvalue, Shifted Inverse Iteration may take a long time to converge. In fact all of the algorithms we've presented so far have exactly the same convergence rate; they all converge linearly. If instead we could improve on the eigenvalue estimate at each iteration we could potentially develop an algorithm with a faster convergence rate. This is the main idea behind Rayleigh Quotient Iteration.
+Shifted Inverse Iteration converges quickly if a good estimate of the target eigenvalue is available. However if \\(\\mu\\) is a poor approximation of the desired eigenvalue, Shifted Inverse Iteration may take a long time to converge. In fact all of the algorithms we've presented so far have exactly the same convergence rate; they all converge linearly. If instead we could improve on the eigenvalue estimate at each iteration we could potentially develop an algorithm with a faster convergence rate. This is the main idea behind Rayleigh Quotient Iteration.
 
 The Rayleigh quotient is defined as
 \\[
@@ -127,7 +127,7 @@ The gradient of the Rayleigh quotient is \\(\\frac{2}{v^{\\top}v}(Av - \\lambda\
 
 Finally we come to the crown jewel of the algorithms in this post. The Rayleigh Quotient Iteration algorithm simply updates the estimate \\(\\mu\\) at each iteration with the Rayleigh quotient. Other than this slight modification, the algorithm is exactly like Shifted Inverse iteration.
 
-<pre><code class="python">
+<pre><code class="language-python">
 def rayleigh_quotient_iteration(A, max_iter):
   I = np.identity(A.shape[0])
   v = np.random.randn(A.shape[0])
