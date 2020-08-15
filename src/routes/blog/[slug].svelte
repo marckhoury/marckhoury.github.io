@@ -58,7 +58,11 @@
         var disqus_config = function () {
             let tokens = window.location.href.split('/');
             this.page.url = window.location.href;
-            this.page.identifier = "/" + tokens[tokens.length-1];
+            if(tokens[tokens.length-1].length === 0) {
+                this.page.identifier = "/" + tokens[tokens.length-2];
+            } else {
+                this.page.identifier = "/" + tokens[tokens.length-1];
+            }
         };
         (function() { // DON'T EDIT BELOW THIS LINE
             var d = document, s = d.createElement('script');
