@@ -1,0 +1,12 @@
+{
+  "title": "Counterintuitive Properties of High Dimensional Space",
+  "date": "2018-03-03",
+  "description": "Our geometric intuition developed in our three-dimensional world often fails us in higher dimensions. In this post I describe just a few phenomena of high dimensions, including escaping spheres, concentration of measure, and kissing numbers. All of these properties can be illustrated using basic mathematics.",
+  "slug": "counterintuitive-properties-of-high-dimensional-space",
+  "tags": ["geometry", "high dimensions"],
+  "authors": [ 
+    { "name": "Marc Khoury" }
+  ],
+  "comments": true,
+  "content": "content.md"
+}

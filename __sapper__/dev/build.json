@@ -1,0 +1,51 @@
+{
+  "bundler": "rollup",
+  "shimport": "1.0.1",
+  "assets": {
+    "main": "client.913bfe8f.js"
+  },
+  "dependencies": {
+    "../client.js": [],
+    "index.svelte": [
+      "client.913bfe8f.js"
+    ],
+    "publications.svelte": [
+      "client.913bfe8f.js"
+    ],
+    "hobbies.svelte": [
+      "client.913bfe8f.js"
+    ],
+    "blog/index.svelte": [
+      "client.913bfe8f.js"
+    ],
+    "blog/[slug].svelte": [
+      "client.913bfe8f.js"
+    ],
+    "../../node_modules/sapper/sapper-dev-client.js": []
+  },
+  "css": {
+    "main": "main.3211539642.css",
+    "chunks": {
+      "index.svelte": [
+        "index.3f655c04.css",
+        "client.913bfe8f.css"
+      ],
+      "publications.svelte": [
+        "publications.fe536608.css",
+        "client.913bfe8f.css"
+      ],
+      "hobbies.svelte": [
+        "hobbies.7b5c1cbb.css",
+        "client.913bfe8f.css"
+      ],
+      "blog/index.svelte": [
+        "index.9c5cb814.css",
+        "client.913bfe8f.css"
+      ],
+      "blog/[slug].svelte": [
+        "[slug].ffee8ad1.css",
+        "client.913bfe8f.css"
+      ]
+    }
+  }
+}

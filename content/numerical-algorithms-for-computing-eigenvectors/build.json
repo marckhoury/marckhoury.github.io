@@ -1,0 +1,12 @@
+{
+  "title": "Numerical Algorithms for Computing Eigenvectors",
+  "date": "2019-02-17",
+  "description": "The eigenvalues and eigenvectors of a matrix are essential accross the sciences. In this post I describe several simple iterative algorithms for computing eigenvector eigenvalue pairs, packed with as much geometric intuition as possible.",
+  "slug": "numerical-algorithms-for-computing-eigenvectors",
+  "tags": ["linear algebra", "numerical algorithms", "rayleigh quotient iteration"],
+  "authors": [ 
+    { "name": "Marc Khoury" }
+  ],
+  "comments": true,
+  "content": "content.md"
+}

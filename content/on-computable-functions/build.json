@@ -1,0 +1,13 @@
+{
+  "title": "On Computable Functions",
+  "date": "2013-05-17",
+  "description": "What does it mean for a function to be computable? This question captured the imagination of several incredible mathematicians in the early 20th century, and laid the foundation for the field of computer science. In this post I recall a bit of the history surrounding this question.",
+  "slug": "on-computable-functions",
+  "tags": ["computability", "theoretical computer science"],
+  "authors": [ 
+    { "name": "Marc Khoury" }
+  ],
+  "comments": true,
+  "bibliography": "references.bib",
+  "content": "content.md"
+}

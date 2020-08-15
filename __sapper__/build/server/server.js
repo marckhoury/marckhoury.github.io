@@ -1,0 +1,3537 @@
+'use strict';
+
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+
+var sirv = _interopDefault(require('sirv'));
+var polka = _interopDefault(require('polka'));
+var compression = _interopDefault(require('compression'));
+var fs = _interopDefault(require('fs'));
+var path = _interopDefault(require('path'));
+var Stream = _interopDefault(require('stream'));
+var http = _interopDefault(require('http'));
+var Url = _interopDefault(require('url'));
+var https = _interopDefault(require('https'));
+var zlib = _interopDefault(require('zlib'));
+
+const moment = require('moment');
+
+var posts = require('../../../content/content.json');
+
+posts.forEach(post => {
+    post.date = moment(post.date);
+	post.html = post.html.replace(/^\t{3}/gm, '');
+});
+
+posts.sort((a, b) => { //Sort in reverse chronological order
+    return a.date < b.date ? 1 : -1;
+});
+
+const contents = JSON.stringify(posts.map(post => {
+	return {
+		title: post.title,
+        date: post.date.format('MMM D, YYYY'),
+        description: post.description,
+        slug: post.slug,
+	};
+}));
+
+function get(req, res) {
+	res.writeHead(200, {
+		'Content-Type': 'application/json'
+	});
+
+	res.end(contents);
+}
+
+var route_0 = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    get: get
+});
+
+const lookup = new Map();
+posts.forEach(post => {
+	lookup.set(post.slug, JSON.stringify(post));
+});
+
+function get$1(req, res, next) {
+	// the `slug` parameter is available because
+	// this file is called [slug].json.js
+	const { slug } = req.params;
+
+	if (lookup.has(slug)) {
+		res.writeHead(200, {
+			'Content-Type': 'application/json'
+		});
+
+		res.end(lookup.get(slug));
+	} else {
+		res.writeHead(404, {
+			'Content-Type': 'application/json'
+		});
+
+		res.end(JSON.stringify({
+			message: `Not found`
+		}));
+	}
+}
+
+var route_1 = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    get: get$1
+});
+
+function noop() { }
+function run(fn) {
+    return fn();
+}
+function blank_object() {
+    return Object.create(null);
+}
+function run_all(fns) {
+    fns.forEach(run);
+}
+function safe_not_equal(a, b) {
+    return a != a ? b == b : a !== b || ((a && typeof a === 'object') || typeof a === 'function');
+}
+
+let current_component;
+function set_current_component(component) {
+    current_component = component;
+}
+function get_current_component() {
+    if (!current_component)
+        throw new Error(`Function called outside component initialization`);
+    return current_component;
+}
+function afterUpdate(fn) {
+    get_current_component().$$.after_update.push(fn);
+}
+function setContext(key, context) {
+    get_current_component().$$.context.set(key, context);
+}
+const escaped = {
+    '"': '&quot;',
+    "'": '&#39;',
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;'
+};
+function escape(html) {
+    return String(html).replace(/["'&<>]/g, match => escaped[match]);
+}
+function each(items, fn) {
+    let str = '';
+    for (let i = 0; i < items.length; i += 1) {
+        str += fn(items[i], i);
+    }
+    return str;
+}
+const missing_component = {
+    $$render: () => ''
+};
+function validate_component(component, name) {
+    if (!component || !component.$$render) {
+        if (name === 'svelte:component')
+            name += ' this={...}';
+        throw new Error(`<${name}> is not a valid SSR component. You may need to review your build config to ensure that dependencies are compiled, rather than imported as pre-compiled modules`);
+    }
+    return component;
+}
+let on_destroy;
+function create_ssr_component(fn) {
+    function $$render(result, props, bindings, slots) {
+        const parent_component = current_component;
+        const $$ = {
+            on_destroy,
+            context: new Map(parent_component ? parent_component.$$.context : []),
+            // these will be immediately discarded
+            on_mount: [],
+            before_update: [],
+            after_update: [],
+            callbacks: blank_object()
+        };
+        set_current_component({ $$ });
+        const html = fn(result, props, bindings, slots);
+        set_current_component(parent_component);
+        return html;
+    }
+    return {
+        render: (props = {}, options = {}) => {
+            on_destroy = [];
+            const result = { title: '', head: '', css: new Set() };
+            const html = $$render(result, props, {}, options);
+            run_all(on_destroy);
+            return {
+                html,
+                css: {
+                    code: Array.from(result.css).map(css => css.code).join('\n'),
+                    map: null // TODO
+                },
+                head: result.title + result.head
+            };
+        },
+        $$render
+    };
+}
+function add_attribute(name, value, boolean) {
+    if (value == null || (boolean && !value))
+        return '';
+    return ` ${name}${value === true ? '' : `=${typeof value === 'string' ? JSON.stringify(escape(value)) : `"${value}"`}`}`;
+}
+
+/* src/routes/index.svelte generated by Svelte v3.24.1 */
+
+const css = {
+	code: "figure.svelte-p12hia{text-align:center;margin:0 auto}h2.svelte-p12hia{font-size:2em;font-weight:300;margin-bottom:1rem}h3.svelte-p12hia{font-size:1.5em;font-weight:300;margin-bottom:1rem}figure.svelte-p12hia{margin:0 0 1em 0}p.svelte-p12hia{margin:1em auto 1.5rem}",
+	map: "{\"version\":3,\"file\":\"index.svelte\",\"sources\":[\"index.svelte\"],\"sourcesContent\":[\"<style>\\n\\tfigure {\\n\\t\\ttext-align: center;\\n\\t\\tmargin: 0 auto;\\n\\t}\\n\\n    h2 {\\n        font-size: 2em;\\n\\t\\tfont-weight: 300;\\n\\t\\tmargin-bottom: 1rem;\\n    }\\n    \\n\\th3 {\\n\\t\\tfont-size: 1.5em;\\n\\t\\tfont-weight: 300;\\n\\t\\tmargin-bottom: 1rem;\\n\\t}\\n\\n\\tfigure {\\n\\t\\tmargin: 0 0 1em 0;\\n\\t}\\n\\n\\tp {\\n\\t\\tmargin: 1em auto 1.5rem;\\n\\t}\\n</style>\\n\\n<svelte:head>\\n\\t<title>Marc Khoury</title>\\n</svelte:head>\\n\\n<figure>\\n\\t<img alt=\\\"me\\\" src=\\\"metrinity.jpg\\\" width=\\\"300\\\">\\n</figure>\\n<p>\\nMy name is <b>Marc Khoury</b>. I'm an Algorithm Developer at Hudson River Trading. I received a PhD in Computer Science from UC Berkeley, a Masters in Mathematics from the University of Cambridge, and a Bachelors in Computer Science and Engineering from The Ohio State University. Over the course of my academic career, my research contributions spanned computational geometry, machine learning, optimization, geometric computer vision, and visualization. I received an NSF Graduate Research Fellowship, a Churchill Scholarship, and was a Finalist for the Hertz Fellowship. \\n</p>\\n\\n<p>\\nMy CV is available <a href=\\\"cv.pdf\\\">here</a>. The easiest way to contact me is by <a href = \\\"mailto:marc.khry@gmail.com\\\">email</a>.\\n</p>\\n\\n<h2> Work History</h2>\\n\\n<h3>\\n    <a href=\\\"http://www.hudson-trading.com/about/\\\" target=\\\"_blank\\\">\\n        <img alt=\\\"hrt\\\" src=\\\"hrt.svg\\\" style=\\\"width: 2em; padding-right: 0.5em\\\">\\n    </a>\\n    Hudson River Trading\\n</h3>\\n<p>\\n    <b>Algorithm Developer</b> (August&nbsp;'20 &mdash;)<br>\\n</p>\\n\\n<h3>\\n    <a href=\\\"https://www.intel.com/content/www/us/en/homepage.html\\\" target=\\\"_blank\\\">\\n        <img alt=\\\"intel\\\" src=\\\"intel.svg\\\" style=\\\"width: 2em; padding-right: 0.5em\\\">\\n    </a>\\n    Intel \\n</h3>\\n<p>\\n    <b>Research Intern</b> (May&nbsp;'16 &mdash; June&nbsp;'17)<br>\\n    Member of <a href=\\\"http://vladlen.info/\\\">Intel Intelligent Systems Lab</a>. Developed a new approach for constructing local geometric feature descriptors for point\\ncloud correspondences using deep learning.\\n</p>\\n\\n<h3>\\n    <a href=\\\"https://www.twitter.com\\\" target=\\\"_blank\\\">\\n        <img alt=\\\"twitter\\\" src=\\\"twitter.png\\\" style=\\\"width: 2em; padding-right: 0.5em\\\">\\n    </a>\\n    Twitter\\n</h3>\\n<p>\\n    <b>Software Engineering Intern</b> (May&nbsp;'14 &mdash; Aug&nbsp;'14)<br>\\n    Developed applications that enable mobile developers to support advertisements.\\n</p>\\n\\n<h3>\\n    <a href=\\\"https://www.microsoft.com/en-us/research/\\\" target=\\\"_blank\\\">\\n        <img alt=\\\"microsoft\\\" src=\\\"microsoft.svg\\\" style=\\\"width: 2em; padding-right: 0.5em\\\">\\n    </a>\\n    Microsoft Research\\n</h3>\\n<p>\\n    <b>Research Intern</b> (June&nbsp;'12 &mdash; Aug&nbsp;'13)<br>\\n    Member of <a href=\\\"https://www.microsoft.com/en-us/research/group/research-software-engineering-rise/\\\">RiSE</a>. Developed a progressive graph data structure that dynamically reﬁnes and coarsens a graph around a focus region for interactive visualization of large graphs.\\n</p>\\n\\n<h3>\\n    <a href=\\\"https://www.amazon.com\\\" target=\\\"_blank\\\">\\n        <img alt=\\\"amazon\\\" src=\\\"amazon.png\\\" style=\\\"width: 2em; padding-right: 0.5em\\\">\\n    </a>\\n    Amazon \\n</h3>\\n<p>\\n    <b>Software Engineering Intern</b> (Sept&nbsp;'11 &mdash; Dec&nbsp;'11)<br>\\n    Developed a framework to collect, store, and analyze data from fraud cases to further automate Amazon’s fraud investigations.\\n</p>\\n\\n<h3>\\n    <a href=\\\"https://www.research.att.com/\\\" target=\\\"_blank\\\">\\n        <img alt=\\\"att\\\" src=\\\"att.svg\\\" style=\\\"width: 2em; padding-right: 0.5em\\\">\\n    </a>\\n    AT&T Labs Research\\n</h3>\\n<p>\\n    <b>Research Intern</b> (June&nbsp;'11 &mdash; Aug&nbsp;'11)<br>\\n    Developed a scalable stress majorization technique using approximate linear algebra to generate large graph drawings.\\n</p>\\n\\n\\n<h2> Education </h2>\\n<h3>\\n    <a href=\\\"https://www.berkeley.edu/\\\" target=\\\"_blank\\\">\\n        <img alt=\\\"cal\\\" src=\\\"cal.svg\\\" style=\\\"width: 2em; padding-right: 0.5em\\\">\\n    </a>\\n    University of California, Berkeley\\n</h3>\\n<p>\\n    <b>Ph.D., Computer Science</b> (Aug&nbsp;'13 &mdash; May&nbsp;'20)<br>\\n</p>\\n\\n<h3>\\n    <a href=\\\"https://www.cam.ac.uk/\\\" target=\\\"_blank\\\">\\n        <img alt=\\\"cambridge\\\" src=\\\"cambridge.svg\\\" style=\\\"width: 2em; padding-right: 0.5em\\\">\\n    </a>\\n    University of Cambridge\\n</h3>\\n<p>\\n    <b>MASt, Mathematics</b> (Aug&nbsp;'12 &mdash; May&nbsp;'13)<br>\\n</p>\\n\\n<h3>\\n    <a href=\\\"https://www.osu.edu/\\\" target=\\\"_blank\\\">\\n        <img alt=\\\"osu\\\" src=\\\"osu.svg\\\" style=\\\"width: 2em; padding-right: 0.5em\\\">\\n    </a>\\n    The Ohio State University\\n</h3>\\n<p>\\n    <b>BS, Computer Science and Engineering </b> (Sept&nbsp;'08 &mdash; June&nbsp;'12)<br>\\n    Summa cum laude with Honors Research Distinction\\n</p>\\n\\n\\n\\n\"],\"names\":[],\"mappings\":\"AACC,MAAM,cAAC,CAAC,AACP,UAAU,CAAE,MAAM,CAClB,MAAM,CAAE,CAAC,CAAC,IAAI,AACf,CAAC,AAEE,EAAE,cAAC,CAAC,AACA,SAAS,CAAE,GAAG,CACpB,WAAW,CAAE,GAAG,CAChB,aAAa,CAAE,IAAI,AACjB,CAAC,AAEJ,EAAE,cAAC,CAAC,AACH,SAAS,CAAE,KAAK,CAChB,WAAW,CAAE,GAAG,CAChB,aAAa,CAAE,IAAI,AACpB,CAAC,AAED,MAAM,cAAC,CAAC,AACP,MAAM,CAAE,CAAC,CAAC,CAAC,CAAC,GAAG,CAAC,CAAC,AAClB,CAAC,AAED,CAAC,cAAC,CAAC,AACF,MAAM,CAAE,GAAG,CAAC,IAAI,CAAC,MAAM,AACxB,CAAC\"}"
+};
+
+const Routes = create_ssr_component(($$result, $$props, $$bindings, $$slots) => {
+	$$result.css.add(css);
+
+	return `${($$result.head += `${($$result.title = `<title>Marc Khoury</title>`, "")}`, "")}
+
+<figure class="${"svelte-p12hia"}"><img alt="${"me"}" src="${"metrinity.jpg"}" width="${"300"}"></figure>
+<p class="${"svelte-p12hia"}">My name is <b>Marc Khoury</b>. I&#39;m an Algorithm Developer at Hudson River Trading. I received a PhD in Computer Science from UC Berkeley, a Masters in Mathematics from the University of Cambridge, and a Bachelors in Computer Science and Engineering from The Ohio State University. Over the course of my academic career, my research contributions spanned computational geometry, machine learning, optimization, geometric computer vision, and visualization. I received an NSF Graduate Research Fellowship, a Churchill Scholarship, and was a Finalist for the Hertz Fellowship. 
+</p>
+
+<p class="${"svelte-p12hia"}">My CV is available <a href="${"cv.pdf"}">here</a>. The easiest way to contact me is by <a href="${"mailto:marc.khry@gmail.com"}">email</a>.
+</p>
+
+<h2 class="${"svelte-p12hia"}">Work History</h2>
+
+<h3 class="${"svelte-p12hia"}"><a href="${"http://www.hudson-trading.com/about/"}" target="${"_blank"}"><img alt="${"hrt"}" src="${"hrt.svg"}" style="${"width: 2em; padding-right: 0.5em"}"></a>
+    Hudson River Trading
+</h3>
+<p class="${"svelte-p12hia"}"><b>Algorithm Developer</b> (August &#39;20 —)<br></p>
+
+<h3 class="${"svelte-p12hia"}"><a href="${"https://www.intel.com/content/www/us/en/homepage.html"}" target="${"_blank"}"><img alt="${"intel"}" src="${"intel.svg"}" style="${"width: 2em; padding-right: 0.5em"}"></a>
+    Intel 
+</h3>
+<p class="${"svelte-p12hia"}"><b>Research Intern</b> (May &#39;16 — June &#39;17)<br>
+    Member of <a href="${"http://vladlen.info/"}">Intel Intelligent Systems Lab</a>. Developed a new approach for constructing local geometric feature descriptors for point
+cloud correspondences using deep learning.
+</p>
+
+<h3 class="${"svelte-p12hia"}"><a href="${"https://www.twitter.com"}" target="${"_blank"}"><img alt="${"twitter"}" src="${"twitter.png"}" style="${"width: 2em; padding-right: 0.5em"}"></a>
+    Twitter
+</h3>
+<p class="${"svelte-p12hia"}"><b>Software Engineering Intern</b> (May &#39;14 — Aug &#39;14)<br>
+    Developed applications that enable mobile developers to support advertisements.
+</p>
+
+<h3 class="${"svelte-p12hia"}"><a href="${"https://www.microsoft.com/en-us/research/"}" target="${"_blank"}"><img alt="${"microsoft"}" src="${"microsoft.svg"}" style="${"width: 2em; padding-right: 0.5em"}"></a>
+    Microsoft Research
+</h3>
+<p class="${"svelte-p12hia"}"><b>Research Intern</b> (June &#39;12 — Aug &#39;13)<br>
+    Member of <a href="${"https://www.microsoft.com/en-us/research/group/research-software-engineering-rise/"}">RiSE</a>. Developed a progressive graph data structure that dynamically reﬁnes and coarsens a graph around a focus region for interactive visualization of large graphs.
+</p>
+
+<h3 class="${"svelte-p12hia"}"><a href="${"https://www.amazon.com"}" target="${"_blank"}"><img alt="${"amazon"}" src="${"amazon.png"}" style="${"width: 2em; padding-right: 0.5em"}"></a>
+    Amazon 
+</h3>
+<p class="${"svelte-p12hia"}"><b>Software Engineering Intern</b> (Sept &#39;11 — Dec &#39;11)<br>
+    Developed a framework to collect, store, and analyze data from fraud cases to further automate Amazon’s fraud investigations.
+</p>
+
+<h3 class="${"svelte-p12hia"}"><a href="${"https://www.research.att.com/"}" target="${"_blank"}"><img alt="${"att"}" src="${"att.svg"}" style="${"width: 2em; padding-right: 0.5em"}"></a>
+    AT&amp;T Labs Research
+</h3>
+<p class="${"svelte-p12hia"}"><b>Research Intern</b> (June &#39;11 — Aug &#39;11)<br>
+    Developed a scalable stress majorization technique using approximate linear algebra to generate large graph drawings.
+</p>
+
+
+<h2 class="${"svelte-p12hia"}">Education </h2>
+<h3 class="${"svelte-p12hia"}"><a href="${"https://www.berkeley.edu/"}" target="${"_blank"}"><img alt="${"cal"}" src="${"cal.svg"}" style="${"width: 2em; padding-right: 0.5em"}"></a>
+    University of California, Berkeley
+</h3>
+<p class="${"svelte-p12hia"}"><b>Ph.D., Computer Science</b> (Aug &#39;13 — May &#39;20)<br></p>
+
+<h3 class="${"svelte-p12hia"}"><a href="${"https://www.cam.ac.uk/"}" target="${"_blank"}"><img alt="${"cambridge"}" src="${"cambridge.svg"}" style="${"width: 2em; padding-right: 0.5em"}"></a>
+    University of Cambridge
+</h3>
+<p class="${"svelte-p12hia"}"><b>MASt, Mathematics</b> (Aug &#39;12 — May &#39;13)<br></p>
+
+<h3 class="${"svelte-p12hia"}"><a href="${"https://www.osu.edu/"}" target="${"_blank"}"><img alt="${"osu"}" src="${"osu.svg"}" style="${"width: 2em; padding-right: 0.5em"}"></a>
+    The Ohio State University
+</h3>
+<p class="${"svelte-p12hia"}"><b>BS, Computer Science and Engineering </b> (Sept &#39;08 — June &#39;12)<br>
+    Summa cum laude with Honors Research Distinction
+</p>`;
+});
+
+var component_0 = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    'default': Routes
+});
+
+/* src/routes/publications.svelte generated by Svelte v3.24.1 */
+
+const css$1 = {
+	code: "h2.svelte-1jwipjp{font-size:2em;font-weight:300;margin-bottom:1rem}",
+	map: "{\"version\":3,\"file\":\"publications.svelte\",\"sources\":[\"publications.svelte\"],\"sourcesContent\":[\"<style>\\n    h2 {\\n        font-size: 2em;\\n\\t\\tfont-weight: 300;\\n\\t\\tmargin-bottom: 1rem;\\n    }\\n</style>\\n\\n\\n<svelte:head>\\n\\t<title>Publications</title>\\n</svelte:head>\\n\\n<p>Below are my academic publications separated by topic.</p>\\n\\n<h2> Machine Learning </h2>\\n<table width=\\\"100%\\\" align=\\\"center\\\" border=\\\"0\\\" cellspacing=\\\"0\\\" cellpadding=\\\"20\\\">\\n    <tbody>\\n        <tr>\\n          <td width=\\\"25%\\\">\\n            <img alt=\\\"opt thumbnail\\\" src=\\\"publications/opt-thumbnail.jpg\\\" width=\\\"170\\\" style=\\\"border-style: none\\\">\\n          </td><td width=\\\"75%\\\" valign=\\\"top\\\">\\n          <p><a href=\\\"https://arxiv.org/abs/1911.03784\\\" id=\\\"approxtri\\\">\\n              <papertitle>Adaptive versus Standard Descent Methods and Robustness Against Adversarial Examples</papertitle></a><br>\\n              <strong>Marc Khoury</strong> <br>\\n          <em>CoRR abs/1911.03784</em>, 2019<br>\\n           <a href=\\\"https://arxiv.org/abs/1911.03784\\\">arxiv</a> /\\n           <a href=\\\"https://www.dropbox.com/s/edfcnb97lzxl19z/models.zip\\\">models</a>\\n          </p>\\n          </td>\\n        </tr>\\n        <tr>\\n          <td width=\\\"25%\\\">\\n            <img alt=\\\"advtrain thumbnail\\\" src=\\\"publications/advtrain-thumbnail.jpg\\\" width=\\\"170\\\" style=\\\"border-style: none\\\">\\n          </td><td width=\\\"75%\\\" valign=\\\"top\\\">\\n          <p><a href=\\\"https://arxiv.org/abs/1905.01019\\\" id=\\\"geomae\\\">\\n              <papertitle>Adversarial Training with Voronoi Constraints</papertitle></a><br>\\n              <strong>Marc Khoury</strong>, <a href=\\\"https://people.eecs.berkeley.edu/~dhm/\\\">Dylan Hadfield-Menell</a><br>\\n          <em>SafeML Workshop, International Conference on Learning Representations (ICLR)</em>, 2019<br>\\n           <a href=\\\"https://arxiv.org/abs/1905.01019\\\">arxiv</a>\\n          </p>\\n          </td>\\n        </tr>\\n        <tr>\\n          <td width=\\\"25%\\\">\\n            <img alt=\\\"geomae thumbnail\\\" src=\\\"publications/geomae-thumbnail.jpg\\\" width=\\\"150\\\" style=\\\"border-style: none\\\">\\n          </td><td width=\\\"75%\\\" valign=\\\"top\\\">\\n          <p><a href=\\\"https://arxiv.org/abs/1811.00525\\\" id=\\\"geomae\\\">\\n              <papertitle>On the Geometry of Adversarial Examples</papertitle></a><br>\\n              <strong>Marc Khoury</strong>, <a href=\\\"https://people.eecs.berkeley.edu/~dhm/\\\">Dylan Hadfield-Menell</a><br>\\n          <em>CoRR abs/1811.00525</em>, 2018<br>\\n           <a href=\\\"https://arxiv.org/abs/1811.00525\\\">arxiv</a>\\n          </p>\\n          </td>\\n        </tr>\\n    </tbody>\\n</table>\\n\\n<h2> Computational Geometry </h2>\\n<table width=\\\"100%\\\" align=\\\"center\\\" border=\\\"0\\\" cellspacing=\\\"0\\\" cellpadding=\\\"20\\\">\\n    <tbody>\\n        <tr>\\n          <td width=\\\"25%\\\">\\n            <img alt=\\\"rcdt thumbnail\\\" src=\\\"publications/rcdt.png\\\" width=\\\"150\\\" style=\\\"border-style: none\\\">\\n          </td><td width=\\\"75%\\\" valign=\\\"top\\\">\\n          <p><a href=\\\"publications\\\" id=\\\"rcdt\\\">\\n              <papertitle>Restricted Constrained Delaunay Triangulations</papertitle></a><br>\\n            <strong>Marc Khoury</strong>, <a href=\\\"http://people.eecs.berkeley.edu/~jrs/\\\">Jonathan Shewchuk</a><br>\\n          <em>To Be Submitted, <a href=\\\"https://www2.eecs.berkeley.edu/Pubs/TechRpts/2020/EECS-2020-49.pdf\\\">Contents Available In My Thesis</a> </em><br>\\n          <!--<a href=\\\"\\\">arXiv</a> -->\\n          </p>\\n          </td>\\n        </tr>\\n        <tr>\\n          <td width=\\\"25%\\\">\\n            <img alt=\\\"approxtri thumbnail\\\" src=\\\"publications/approxtri-thumbnail.jpg\\\" width=\\\"150\\\" style=\\\"border-style: none\\\">\\n          </td><td width=\\\"75%\\\" valign=\\\"top\\\">\\n          <p><a href=\\\"https://arxiv.org/abs/1911.03424\\\" id=\\\"approxtri\\\">\\n              <papertitle>Approximation Bounds for Interpolation and Normals on Triangulated Surfaces and Manifolds</papertitle></a><br>\\n              <strong>Marc Khoury</strong>, <a href=\\\"https://people.eecs.berkeley.edu/~jrs/\\\">Jonathan Shewchuk</a><br>\\n          <em>CoRR abs/1911.03424</em>, 2019<br>\\n           <a href=\\\"https://arxiv.org/abs/1911.03424\\\">arxiv</a>\\n          </p>\\n          </td>\\n        </tr>\\n        <tr>\\n          <td width=\\\"25%\\\">\\n            <img alt=\\\"srp thumbnail\\\" src=\\\"publications/srp.png\\\" width=\\\"150\\\" style=\\\"border-style: none\\\">\\n          </td><td width=\\\"75%\\\" valign=\\\"top\\\">\\n          <p><a href=\\\"http://2017.cccg.ca/proceedings/Session5B-paper4.pdf\\\" id=\\\"srp\\\">\\n              <papertitle>Supporting Ruled Polygons</papertitle></a><br>\\n           Nicholas J. Cavanna, <strong>Marc Khoury</strong>, <a href=\\\"http://donsheehy.net/\\\">Donald R. Sheehy</a><br>\\n          <em>Canadian Conference on Computational Geometry (CCCG)</em>, 2017<br>\\n           <a href=\\\"http://arxiv.org/abs/1707.00826\\\">arXiv</a>\\n          </p>\\n          </td>\\n        </tr>\\n        <tr>\\n          <td width=\\\"25%\\\">\\n            <img alt=\\\"fixed point thumbnail\\\" src=\\\"publications/fixedpt.png\\\" width=\\\"150\\\" style=\\\"border-style: none\\\">\\n          </td><td width=\\\"75%\\\" valign=\\\"top\\\">\\n          <p><a href=\\\"http://drops.dagstuhl.de/opus/volltexte/2016/5939/pdf/LIPIcs-SoCG-2016-47.pdf\\\" id=\\\"fixedpt\\\">\\n              <papertitle>Fixed Points of the Restricted Delaunay Triangulation Operator</papertitle></a><br>\\n            <strong>Marc Khoury</strong>, <a href=\\\"http://people.eecs.berkeley.edu/~jrs/\\\">Jonathan Shewchuk</a><br>\\n          <em>Symposium on Computational Geometry (SoCG)</em>, 2016<br>\\n          <!--<a href=\\\"\\\">arXiv</a> -->\\n          </p>\\n          </td>\\n        </tr>\\n    </tbody>\\n</table>\\n\\n\\n<h2> Computer Vision</h2>\\n<table width=\\\"100%\\\" align=\\\"center\\\" border=\\\"0\\\" cellspacing=\\\"0\\\" cellpadding=\\\"20\\\">\\n    <tbody>\\n         <tr>\\n          <td width=\\\"25%\\\">\\n            <img alt=\\\"lgf thumbnail\\\" src=\\\"publications/learning-geometric-features-thumbnail.jpg\\\" width=\\\"150\\\" style=\\\"border-style: none\\\">\\n          </td><td width=\\\"75%\\\" valign=\\\"top\\\">\\n          <p><a href=\\\"publications/learning-geometric-features.pdf\\\" id=\\\"cgf\\\">\\n              <papertitle>Learning Compact Geometric Features</papertitle></a><br>\\n              <strong>Marc Khoury</strong>, <a href=\\\"http://qianyi.info/\\\"> Qian-Yi Zhou </a>, <a href=\\\"http://vladlen.info/\\\">Vladlen Koltun</a><br>\\n          <em>International Conference on Computer Vision (ICCV)</em>, 2017<br>\\n           <a href=\\\"publications/learning-geometric-features.pdf\\\">paper</a> /\\n           <a href=\\\"publications/learning-geometric-features-supplement.pdf\\\">supplement</a> /\\n           <a href=\\\"https://github.com/marckhoury/CGF\\\">code</a> /\\n           <a href=\\\"https://marckhoury.github.io/CGF/\\\">data</a>\\n          </p>\\n          </td>\\n        </tr>\\n    </tbody>\\n</table>\\n\\n<h2> Visualization </h2>\\n<table width=\\\"100%\\\" align=\\\"center\\\" border=\\\"0\\\" cellspacing=\\\"0\\\" cellpadding=\\\"20\\\">\\n    <tbody>\\n        <tr>\\n          <td width=\\\"25%\\\">\\n              <img alt=\\\"dynamic graph drawing\\\" src=\\\"publications/finance256.gif\\\" width=\\\"150\\\">\\n              </td>\\n              <td valign=\\\"top\\\" width=\\\"75%\\\">\\n              <p><a href=\\\"http://onlinelibrary.wiley.com/doi/10.1111/j.1467-8659.2012.03090.x/full\\\">\\n                <papertitle>Drawing Large Graphs by Low-Rank Stress Majorization</papertitle></a><br>\\n              <strong>Marc Khoury</strong>, <a href=\\\"http://yifanhu.net/\\\">Yifan Hu</a>, <a href=\\\"https://scholar.google.com/citations?user=IJan8QwAAAAJ&hl=en\\\">Shankar Krishnan</a>, <a href=\\\"https://cscheid.net/\\\">Carlos Scheidegger</a>  <br>\\n              <em>Computer Graphics Forum</em><br> \\n              <em>Proceedings of Eurographics Conference on Visualization (EuroVis)</em>, 2012<br>\\n                <a href=\\\"publications/mars.pdf\\\">paper</a> /\\n                <a href=\\\"https://github.com/marckhoury/mars\\\">code</a>\\n              </p>\\n              </td>\\n            </tr>\\n\\n          <td width=\\\"25%\\\">\\n              <img alt=\\\"fractal thumbnail\\\" src=\\\"publications/boxdim.gif\\\" width=\\\"150\\\" style=\\\"border-style: none\\\">\\n              </td>\\n              <td valign=\\\"top\\\" width=\\\"75%\\\">\\n              <p><a href=\\\"http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=5613459\\\">\\n                <papertitle>On the Fractal Dimension of Isosurfaces</papertitle></a><br>\\n              <strong>Marc Khoury</strong>, <a href=\\\"http://web.cse.ohio-state.edu/~wenger/\\\">Rephael Wenger</a><br>\\n                <em>IEEE Transactions on Visualization and Computer Graphics (TVCG)</em> <br>\\n                <em>Proceedings of Visualization (Vis)</em>, 2010 <br>\\n                <a href=\\\"publications/fractal.pdf\\\">paper</a>\\n              </p><p></p>\\n          </td>\\n    </tbody>\\n</table>\\n\\n<h2>Grants</h2>\\n<table width=\\\"100%\\\" align=\\\"center\\\" border=\\\"0\\\" cellspacing=\\\"0\\\" cellpadding=\\\"20\\\">\\n    <tbody>\\n        <tr>\\n          <td width=\\\"25%\\\">\\n              </td>\\n              <td valign=\\\"top\\\" width=\\\"75%\\\">\\n              <p><a href=\\\"https://www.nsf.gov/awardsearch/showAward?AWD_ID=1909235&HistoricalAwards=false\\\">\\n                <papertitle>Geometric Sampling Theory and Robust Machine Learning Algorithms</papertitle></a><br>\\n              Jonathan Shewchuk<br>\\n              <em>NSF Award CCF-1909235, $400,000</em><br> \\n              </p>\\n              <p>\\n                Based on my work on adversarial robustness above; I contributed a significant fraction of the project ideas and text. \\n              </p>\\n            </td>\\n        </tr>\\n    </tbody>\\n</table>\"],\"names\":[],\"mappings\":\"AACI,EAAE,eAAC,CAAC,AACA,SAAS,CAAE,GAAG,CACpB,WAAW,CAAE,GAAG,CAChB,aAAa,CAAE,IAAI,AACjB,CAAC\"}"
+};
+
+const Publications = create_ssr_component(($$result, $$props, $$bindings, $$slots) => {
+	$$result.css.add(css$1);
+
+	return `${($$result.head += `${($$result.title = `<title>Publications</title>`, "")}`, "")}
+
+<p>Below are my academic publications separated by topic.</p>
+
+<h2 class="${"svelte-1jwipjp"}">Machine Learning </h2>
+<table width="${"100%"}" align="${"center"}" border="${"0"}" cellspacing="${"0"}" cellpadding="${"20"}"><tbody><tr><td width="${"25%"}"><img alt="${"opt thumbnail"}" src="${"publications/opt-thumbnail.jpg"}" width="${"170"}" style="${"border-style: none"}">
+          </td><td width="${"75%"}" valign="${"top"}"><p><a href="${"https://arxiv.org/abs/1911.03784"}" id="${"approxtri"}"><papertitle>Adaptive versus Standard Descent Methods and Robustness Against Adversarial Examples</papertitle></a><br>
+              <strong>Marc Khoury</strong> <br>
+          <em>CoRR abs/1911.03784</em>, 2019<br>
+           <a href="${"https://arxiv.org/abs/1911.03784"}">arxiv</a> /
+           <a href="${"https://www.dropbox.com/s/edfcnb97lzxl19z/models.zip"}">models</a></p></td></tr>
+        <tr><td width="${"25%"}"><img alt="${"advtrain thumbnail"}" src="${"publications/advtrain-thumbnail.jpg"}" width="${"170"}" style="${"border-style: none"}">
+          </td><td width="${"75%"}" valign="${"top"}"><p><a href="${"https://arxiv.org/abs/1905.01019"}" id="${"geomae"}"><papertitle>Adversarial Training with Voronoi Constraints</papertitle></a><br>
+              <strong>Marc Khoury</strong>, <a href="${"https://people.eecs.berkeley.edu/~dhm/"}">Dylan Hadfield-Menell</a><br>
+          <em>SafeML Workshop, International Conference on Learning Representations (ICLR)</em>, 2019<br>
+           <a href="${"https://arxiv.org/abs/1905.01019"}">arxiv</a></p></td></tr>
+        <tr><td width="${"25%"}"><img alt="${"geomae thumbnail"}" src="${"publications/geomae-thumbnail.jpg"}" width="${"150"}" style="${"border-style: none"}">
+          </td><td width="${"75%"}" valign="${"top"}"><p><a href="${"https://arxiv.org/abs/1811.00525"}" id="${"geomae"}"><papertitle>On the Geometry of Adversarial Examples</papertitle></a><br>
+              <strong>Marc Khoury</strong>, <a href="${"https://people.eecs.berkeley.edu/~dhm/"}">Dylan Hadfield-Menell</a><br>
+          <em>CoRR abs/1811.00525</em>, 2018<br>
+           <a href="${"https://arxiv.org/abs/1811.00525"}">arxiv</a></p></td></tr></tbody></table>
+
+<h2 class="${"svelte-1jwipjp"}">Computational Geometry </h2>
+<table width="${"100%"}" align="${"center"}" border="${"0"}" cellspacing="${"0"}" cellpadding="${"20"}"><tbody><tr><td width="${"25%"}"><img alt="${"rcdt thumbnail"}" src="${"publications/rcdt.png"}" width="${"150"}" style="${"border-style: none"}">
+          </td><td width="${"75%"}" valign="${"top"}"><p><a href="${"publications"}" id="${"rcdt"}"><papertitle>Restricted Constrained Delaunay Triangulations</papertitle></a><br>
+            <strong>Marc Khoury</strong>, <a href="${"http://people.eecs.berkeley.edu/~jrs/"}">Jonathan Shewchuk</a><br>
+          <em>To Be Submitted, <a href="${"https://www2.eecs.berkeley.edu/Pubs/TechRpts/2020/EECS-2020-49.pdf"}">Contents Available In My Thesis</a> </em><br>
+          </p></td></tr>
+        <tr><td width="${"25%"}"><img alt="${"approxtri thumbnail"}" src="${"publications/approxtri-thumbnail.jpg"}" width="${"150"}" style="${"border-style: none"}">
+          </td><td width="${"75%"}" valign="${"top"}"><p><a href="${"https://arxiv.org/abs/1911.03424"}" id="${"approxtri"}"><papertitle>Approximation Bounds for Interpolation and Normals on Triangulated Surfaces and Manifolds</papertitle></a><br>
+              <strong>Marc Khoury</strong>, <a href="${"https://people.eecs.berkeley.edu/~jrs/"}">Jonathan Shewchuk</a><br>
+          <em>CoRR abs/1911.03424</em>, 2019<br>
+           <a href="${"https://arxiv.org/abs/1911.03424"}">arxiv</a></p></td></tr>
+        <tr><td width="${"25%"}"><img alt="${"srp thumbnail"}" src="${"publications/srp.png"}" width="${"150"}" style="${"border-style: none"}">
+          </td><td width="${"75%"}" valign="${"top"}"><p><a href="${"http://2017.cccg.ca/proceedings/Session5B-paper4.pdf"}" id="${"srp"}"><papertitle>Supporting Ruled Polygons</papertitle></a><br>
+           Nicholas J. Cavanna, <strong>Marc Khoury</strong>, <a href="${"http://donsheehy.net/"}">Donald R. Sheehy</a><br>
+          <em>Canadian Conference on Computational Geometry (CCCG)</em>, 2017<br>
+           <a href="${"http://arxiv.org/abs/1707.00826"}">arXiv</a></p></td></tr>
+        <tr><td width="${"25%"}"><img alt="${"fixed point thumbnail"}" src="${"publications/fixedpt.png"}" width="${"150"}" style="${"border-style: none"}">
+          </td><td width="${"75%"}" valign="${"top"}"><p><a href="${"http://drops.dagstuhl.de/opus/volltexte/2016/5939/pdf/LIPIcs-SoCG-2016-47.pdf"}" id="${"fixedpt"}"><papertitle>Fixed Points of the Restricted Delaunay Triangulation Operator</papertitle></a><br>
+            <strong>Marc Khoury</strong>, <a href="${"http://people.eecs.berkeley.edu/~jrs/"}">Jonathan Shewchuk</a><br>
+          <em>Symposium on Computational Geometry (SoCG)</em>, 2016<br>
+          </p></td></tr></tbody></table>
+
+
+<h2 class="${"svelte-1jwipjp"}">Computer Vision</h2>
+<table width="${"100%"}" align="${"center"}" border="${"0"}" cellspacing="${"0"}" cellpadding="${"20"}"><tbody><tr><td width="${"25%"}"><img alt="${"lgf thumbnail"}" src="${"publications/learning-geometric-features-thumbnail.jpg"}" width="${"150"}" style="${"border-style: none"}">
+          </td><td width="${"75%"}" valign="${"top"}"><p><a href="${"publications/learning-geometric-features.pdf"}" id="${"cgf"}"><papertitle>Learning Compact Geometric Features</papertitle></a><br>
+              <strong>Marc Khoury</strong>, <a href="${"http://qianyi.info/"}">Qian-Yi Zhou </a>, <a href="${"http://vladlen.info/"}">Vladlen Koltun</a><br>
+          <em>International Conference on Computer Vision (ICCV)</em>, 2017<br>
+           <a href="${"publications/learning-geometric-features.pdf"}">paper</a> /
+           <a href="${"publications/learning-geometric-features-supplement.pdf"}">supplement</a> /
+           <a href="${"https://github.com/marckhoury/CGF"}">code</a> /
+           <a href="${"https://marckhoury.github.io/CGF/"}">data</a></p></td></tr></tbody></table>
+
+<h2 class="${"svelte-1jwipjp"}">Visualization </h2>
+<table width="${"100%"}" align="${"center"}" border="${"0"}" cellspacing="${"0"}" cellpadding="${"20"}"><tbody><tr><td width="${"25%"}"><img alt="${"dynamic graph drawing"}" src="${"publications/finance256.gif"}" width="${"150"}"></td>
+              <td valign="${"top"}" width="${"75%"}"><p><a href="${"http://onlinelibrary.wiley.com/doi/10.1111/j.1467-8659.2012.03090.x/full"}"><papertitle>Drawing Large Graphs by Low-Rank Stress Majorization</papertitle></a><br>
+              <strong>Marc Khoury</strong>, <a href="${"http://yifanhu.net/"}">Yifan Hu</a>, <a href="${"https://scholar.google.com/citations?user=IJan8QwAAAAJ&hl=en"}">Shankar Krishnan</a>, <a href="${"https://cscheid.net/"}">Carlos Scheidegger</a>  <br>
+              <em>Computer Graphics Forum</em><br> 
+              <em>Proceedings of Eurographics Conference on Visualization (EuroVis)</em>, 2012<br>
+                <a href="${"publications/mars.pdf"}">paper</a> /
+                <a href="${"https://github.com/marckhoury/mars"}">code</a></p></td></tr>
+
+          <td width="${"25%"}"><img alt="${"fractal thumbnail"}" src="${"publications/boxdim.gif"}" width="${"150"}" style="${"border-style: none"}"></td>
+              <td valign="${"top"}" width="${"75%"}"><p><a href="${"http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=5613459"}"><papertitle>On the Fractal Dimension of Isosurfaces</papertitle></a><br>
+              <strong>Marc Khoury</strong>, <a href="${"http://web.cse.ohio-state.edu/~wenger/"}">Rephael Wenger</a><br>
+                <em>IEEE Transactions on Visualization and Computer Graphics (TVCG)</em> <br>
+                <em>Proceedings of Visualization (Vis)</em>, 2010 <br>
+                <a href="${"publications/fractal.pdf"}">paper</a>
+              </p><p></p></td></tbody></table>
+
+<h2 class="${"svelte-1jwipjp"}">Grants</h2>
+<table width="${"100%"}" align="${"center"}" border="${"0"}" cellspacing="${"0"}" cellpadding="${"20"}"><tbody><tr><td width="${"25%"}"></td>
+              <td valign="${"top"}" width="${"75%"}"><p><a href="${"https://www.nsf.gov/awardsearch/showAward?AWD_ID=1909235&HistoricalAwards=false"}"><papertitle>Geometric Sampling Theory and Robust Machine Learning Algorithms</papertitle></a><br>
+              Jonathan Shewchuk<br>
+              <em>NSF Award CCF-1909235, $400,000</em><br></p>
+              <p>Based on my work on adversarial robustness above; I contributed a significant fraction of the project ideas and text. 
+              </p></td></tr></tbody></table>`;
+});
+
+var component_1 = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    'default': Publications
+});
+
+/* src/routes/hobbies.svelte generated by Svelte v3.24.1 */
+
+const css$2 = {
+	code: "figure.svelte-13wd4ri{text-align:center;margin:0 0 1em 0}h2.svelte-13wd4ri{font-size:2em;font-weight:300}",
+	map: "{\"version\":3,\"file\":\"hobbies.svelte\",\"sources\":[\"hobbies.svelte\"],\"sourcesContent\":[\"<style>\\n\\tfigure {\\n\\t\\ttext-align: center;\\n\\t\\tmargin: 0 0 1em 0;\\n\\t}\\n\\n    h2 {\\n        font-size: 2em;\\n\\t\\tfont-weight: 300;\\n    }\\n    \\n\\tp {\\n\\t}\\n</style>\\n\\n<svelte:head>\\n\\t<title>Hobbies</title>\\n</svelte:head>\\n\\n<h2>Cycling</h2>\\n\\n<figure>\\n\\t<img alt=\\\"me\\\" src=\\\"hobbies/cycling.jpg\\\" width=\\\"300\\\">\\n</figure>\\n<p>\\nI started cycling in my first year of graduate school and have loved it ever since. The Bay Area provided an ideal environment with ample difficult climbs and permissible temperatures year-round. I've done every noteworthy ride in the East Bay, including <a href=\\\"https://ridewithgps.com/routes/33429185\\\">Three Bears</a> and <a href=\\\"https://ridewithgps.com/routes/33425009\\\">Mt. Diablo</a>, as well as a good number in Marin, including <a href=\\\"https://ridewithgps.com/routes/33633048\\\">Mt. Tam</a>. I've also participated in the Grizzly Peak and Marin Century rides.\\n</p>\\n\\n<p>\\nRecently I discovered that years of descending roads at 30mph with little protection transfers very well to skiing. \\n</p>\\n\\n<h2>Cooking</h2>\\n<p>\\nCooking is exactly like conducting research. There are some fundamental techniques and over time you build intuition and a mental model for how things should work. The rest is just play. While I have yet to make a publishable contribution to this field, I have made many delicious meals for my friends over the years. The best part about cooking is that you get to eat your results with your friends.\\n</p>\\n\\n<p>\\nI have a weakness for expensive restaurants, where food is as much about the art as the science. I also love steak and chocolate a little too much.\\n</p>\\n\\n<h2>Gaming</h2>\\n<p>\\nOver the course of my life I have played every installment of the Super Smash Bros series, with the exception of SSB4. Currently I play SSBU exclusively, which, for me, is the most enjoyable of the series. (Sorry Melee fans.) I currently main Zero Suit Samus, and secondary Inkling and Zelda. Let me know if you'd like to play a set with me, I'm always up for playing with people who are better than me.\\n</p>\\n<p>\\nWhen I was younger I played a number of other video games in other genres, but none have been as consistent throughout my life. (Also after one lost summer in high school spent in Ragnarok Online, I no longer play MMORPGs.) I'll occasionally play board games with friends, but I consider them more of a social activity, not a competitive one. \\n</p>\\n\\n<h2>Media</h2>\\n<p>\\nI've enjoyed a wide variety of media throughout my life. I watched <a href=\\\"https://myanimelist.net/animelist/marckhoury?status=7&order=4&order2=0\\\">a lot of anime </a> when I was younger, though this has tapered off in recent years. While not technically anime, I also enjoyed <a href=\\\"https://en.wikipedia.org/wiki/Avatar:_The_Last_Airbender\\\">ATLA</a>, and continue to enjoy <a href=\\\"https://roosterteeth.com/series/rwby\\\">RWBY</a> and <a href=\\\"https://en.wikipedia.org/wiki/The_Dragon_Prince\\\">The Dragon Prince</a>. The first few seasons of <a href=\\\"https://en.wikipedia.org/wiki/Archer_(2009_TV_series)\\\">Archer</a> and <a href=\\\"https://en.wikipedia.org/wiki/Shameless_(American_TV_series)\\\">Shameless</a> are good; <a href=\\\"https://en.wikipedia.org/wiki/South_Park\\\">South Park</a> is still good even after 23 seasons. (I have a taste for dark and depressing content.) A few recent series, the next seasons of which I eagerly await, include <a href=\\\"https://en.wikipedia.org/wiki/The_Umbrella_Academy_(TV_series)\\\">The Umbrella Academy</a>, <a href=\\\"https://en.wikipedia.org/wiki/Big_Mouth_(TV_series)\\\">Big Mouth</a>, and <a href=\\\"https://en.wikipedia.org/wiki/Altered_Carbon_(TV_series)\\\">Altered Carbon</a>. (For the love of God Netflix, do not cancel The Umbrella Academy!)\\n</p>\\n\\n<p>\\nLike everyone else, I like the Marvel Cinematic Universe, Star Wars, and Pixar. (Just take my money Disney.) I enjoy action movies from the late 80s early 90s, including <a href=\\\"https://en.wikipedia.org/wiki/Die_Hard\\\">Die Hard</a>, <a href=\\\"https://en.wikipedia.org/wiki/The_Hunt_for_Red_October_(film)\\\"> The Hunt for Red October</a>, and <a href=\\\"https://en.wikipedia.org/wiki/The_Rock_(film)\\\">The Rock</a>. I also enjoy both comedic and depressing romance movies. (I can recognize where my taste is bad, I simply don't care.)\\n</p>\\n\\n<h2>Twitch</h2>\\n<p>\\nI recently started an academic talk series on Twitch, called <a href=\\\"https://www.twitch.tv/thinkswithtwitch\\\">ThinksWithTwitch</a>. Each week we bring on a speaker to give a talk about their research followed by a Q&amp;A. We source talks from a variety of topics across STEM, including technology, healthcare, machine learning, physics, and biology. \\n</p>\\n\\n<p>\\nIf you're interested in science I'd recommend you check out a stream and ask questions in the chat! Past talks are also available on <a href=\\\"https://www.youtube.com/channel/UCsYlWeIYhLh5tGdL-c9MmNQ\\\">our YouTube channel</a>. We're also constantly looking for new speakers, so if you've done some work in an interesting area and can communicate your work to a scientifically literate outside of your domain, please contact me!\\n</p>\\n\\n<h2>FDLG</h2>\\n<p>\\nDuring quarantine my friend and I created <a href=\\\"https://fdlg.herokuapp.com/\\\">Furthest Distance Lunch Groups</a>, coordinated Zoom lunches for students. Students sign up and each week we pair them with 3 other random students to virtually meet up for lunch over Zoom. We started in UC Berkeley, but soon expanded to nearly 400 students from CMU, UW, Georgia Tech, UPenn, Princeton, Cornell, UIUC, UChicago, NYU, and others. Our goal was to provide more social interaction for people stuck at home as well as an opportunity to meet new people with different interests. It was good opportunity to learn Javascript and Node.js, and to use technology for some good. \\n</p>\\n\\n<p>\\nI have had to step away from FDLG for the time being as other tasks have taken priority. However I've left it in capable hands. \\n</p>\\n\"],\"names\":[],\"mappings\":\"AACC,MAAM,eAAC,CAAC,AACP,UAAU,CAAE,MAAM,CAClB,MAAM,CAAE,CAAC,CAAC,CAAC,CAAC,GAAG,CAAC,CAAC,AAClB,CAAC,AAEE,EAAE,eAAC,CAAC,AACA,SAAS,CAAE,GAAG,CACpB,WAAW,CAAE,GAAG,AACd,CAAC\"}"
+};
+
+const Hobbies = create_ssr_component(($$result, $$props, $$bindings, $$slots) => {
+	$$result.css.add(css$2);
+
+	return `${($$result.head += `${($$result.title = `<title>Hobbies</title>`, "")}`, "")}
+
+<h2 class="${"svelte-13wd4ri"}">Cycling</h2>
+
+<figure class="${"svelte-13wd4ri"}"><img alt="${"me"}" src="${"hobbies/cycling.jpg"}" width="${"300"}"></figure>
+<p class="${"svelte-13wd4ri"}">I started cycling in my first year of graduate school and have loved it ever since. The Bay Area provided an ideal environment with ample difficult climbs and permissible temperatures year-round. I&#39;ve done every noteworthy ride in the East Bay, including <a href="${"https://ridewithgps.com/routes/33429185"}">Three Bears</a> and <a href="${"https://ridewithgps.com/routes/33425009"}">Mt. Diablo</a>, as well as a good number in Marin, including <a href="${"https://ridewithgps.com/routes/33633048"}">Mt. Tam</a>. I&#39;ve also participated in the Grizzly Peak and Marin Century rides.
+</p>
+
+<p class="${"svelte-13wd4ri"}">Recently I discovered that years of descending roads at 30mph with little protection transfers very well to skiing. 
+</p>
+
+<h2 class="${"svelte-13wd4ri"}">Cooking</h2>
+<p class="${"svelte-13wd4ri"}">Cooking is exactly like conducting research. There are some fundamental techniques and over time you build intuition and a mental model for how things should work. The rest is just play. While I have yet to make a publishable contribution to this field, I have made many delicious meals for my friends over the years. The best part about cooking is that you get to eat your results with your friends.
+</p>
+
+<p class="${"svelte-13wd4ri"}">I have a weakness for expensive restaurants, where food is as much about the art as the science. I also love steak and chocolate a little too much.
+</p>
+
+<h2 class="${"svelte-13wd4ri"}">Gaming</h2>
+<p class="${"svelte-13wd4ri"}">Over the course of my life I have played every installment of the Super Smash Bros series, with the exception of SSB4. Currently I play SSBU exclusively, which, for me, is the most enjoyable of the series. (Sorry Melee fans.) I currently main Zero Suit Samus, and secondary Inkling and Zelda. Let me know if you&#39;d like to play a set with me, I&#39;m always up for playing with people who are better than me.
+</p>
+<p class="${"svelte-13wd4ri"}">When I was younger I played a number of other video games in other genres, but none have been as consistent throughout my life. (Also after one lost summer in high school spent in Ragnarok Online, I no longer play MMORPGs.) I&#39;ll occasionally play board games with friends, but I consider them more of a social activity, not a competitive one. 
+</p>
+
+<h2 class="${"svelte-13wd4ri"}">Media</h2>
+<p class="${"svelte-13wd4ri"}">I&#39;ve enjoyed a wide variety of media throughout my life. I watched <a href="${"https://myanimelist.net/animelist/marckhoury?status=7ℴ=4&order2=0"}">a lot of anime </a> when I was younger, though this has tapered off in recent years. While not technically anime, I also enjoyed <a href="${"https://en.wikipedia.org/wiki/Avatar:_The_Last_Airbender"}">ATLA</a>, and continue to enjoy <a href="${"https://roosterteeth.com/series/rwby"}">RWBY</a> and <a href="${"https://en.wikipedia.org/wiki/The_Dragon_Prince"}">The Dragon Prince</a>. The first few seasons of <a href="${"https://en.wikipedia.org/wiki/Archer_(2009_TV_series)"}">Archer</a> and <a href="${"https://en.wikipedia.org/wiki/Shameless_(American_TV_series)"}">Shameless</a> are good; <a href="${"https://en.wikipedia.org/wiki/South_Park"}">South Park</a> is still good even after 23 seasons. (I have a taste for dark and depressing content.) A few recent series, the next seasons of which I eagerly await, include <a href="${"https://en.wikipedia.org/wiki/The_Umbrella_Academy_(TV_series)"}">The Umbrella Academy</a>, <a href="${"https://en.wikipedia.org/wiki/Big_Mouth_(TV_series)"}">Big Mouth</a>, and <a href="${"https://en.wikipedia.org/wiki/Altered_Carbon_(TV_series)"}">Altered Carbon</a>. (For the love of God Netflix, do not cancel The Umbrella Academy!)
+</p>
+
+<p class="${"svelte-13wd4ri"}">Like everyone else, I like the Marvel Cinematic Universe, Star Wars, and Pixar. (Just take my money Disney.) I enjoy action movies from the late 80s early 90s, including <a href="${"https://en.wikipedia.org/wiki/Die_Hard"}">Die Hard</a>, <a href="${"https://en.wikipedia.org/wiki/The_Hunt_for_Red_October_(film)"}">The Hunt for Red October</a>, and <a href="${"https://en.wikipedia.org/wiki/The_Rock_(film)"}">The Rock</a>. I also enjoy both comedic and depressing romance movies. (I can recognize where my taste is bad, I simply don&#39;t care.)
+</p>
+
+<h2 class="${"svelte-13wd4ri"}">Twitch</h2>
+<p class="${"svelte-13wd4ri"}">I recently started an academic talk series on Twitch, called <a href="${"https://www.twitch.tv/thinkswithtwitch"}">ThinksWithTwitch</a>. Each week we bring on a speaker to give a talk about their research followed by a Q&amp;A. We source talks from a variety of topics across STEM, including technology, healthcare, machine learning, physics, and biology. 
+</p>
+
+<p class="${"svelte-13wd4ri"}">If you&#39;re interested in science I&#39;d recommend you check out a stream and ask questions in the chat! Past talks are also available on <a href="${"https://www.youtube.com/channel/UCsYlWeIYhLh5tGdL-c9MmNQ"}">our YouTube channel</a>. We&#39;re also constantly looking for new speakers, so if you&#39;ve done some work in an interesting area and can communicate your work to a scientifically literate outside of your domain, please contact me!
+</p>
+
+<h2 class="${"svelte-13wd4ri"}">FDLG</h2>
+<p class="${"svelte-13wd4ri"}">During quarantine my friend and I created <a href="${"https://fdlg.herokuapp.com/"}">Furthest Distance Lunch Groups</a>, coordinated Zoom lunches for students. Students sign up and each week we pair them with 3 other random students to virtually meet up for lunch over Zoom. We started in UC Berkeley, but soon expanded to nearly 400 students from CMU, UW, Georgia Tech, UPenn, Princeton, Cornell, UIUC, UChicago, NYU, and others. Our goal was to provide more social interaction for people stuck at home as well as an opportunity to meet new people with different interests. It was good opportunity to learn Javascript and Node.js, and to use technology for some good. 
+</p>
+
+<p class="${"svelte-13wd4ri"}">I have had to step away from FDLG for the time being as other tasks have taken priority. However I&#39;ve left it in capable hands. 
+</p>`;
+});
+
+var component_2 = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    'default': Hobbies
+});
+
+/* src/routes/blog/index.svelte generated by Svelte v3.24.1 */
+
+const css$3 = {
+	code: "ul.svelte-1ezv3cy{margin:0 0 1em 0;line-height:1.5}.post.svelte-1ezv3cy{display:flex;flex-direction:row;align-items:baseline;margin-bottom:2rem}.date.svelte-1ezv3cy{width:8rem;margin-right:1rem;flex-grow:1}.text-base.svelte-1ezv3cy{font-size:1rem}.font-bold.svelte-1ezv3cy{font-weight:700}.font-light.svelte-1ezv3cy{font-weight:300}.no-underline.svelte-1ezv3cy{text-decoration:none}.text-sm.svelte-1ezv3cy{font-size:.875rem}.w-full.svelte-1ezv3cy{width:100%\n    }",
+	map: "{\"version\":3,\"file\":\"index.svelte\",\"sources\":[\"index.svelte\"],\"sourcesContent\":[\"<script context=\\\"module\\\">\\n\\texport function preload({ params, query }) {\\n\\t\\treturn this.fetch(`blog.json`).then(r => r.json()).then(posts => {\\n\\t\\t\\treturn { posts };\\n\\t\\t});\\n\\t}\\n</script>\\n\\n<script>\\n\\texport let posts;\\n</script>\\n\\n<style>\\n\\tul {\\n\\t\\tmargin: 0 0 1em 0;\\n\\t\\tline-height: 1.5;\\n\\t}\\n    .post {\\n        display: flex;\\n        flex-direction: row;\\n        align-items: baseline;\\n        margin-bottom: 2rem;\\n    }\\n    .date {\\n        width: 8rem;\\n        margin-right: 1rem;\\n        flex-grow: 1;\\n    }\\n    .text-base {\\n        font-size: 1rem;\\n    }\\n    .font-bold {\\n        font-weight: 700;\\n    }\\n    .font-light {\\n        font-weight: 300;\\n    }\\n    .no-underline {\\n        text-decoration: none;\\n    }\\n    .text-sm {\\n        font-size: .875rem;\\n    }\\n    .w-full {\\n        width: 100%\\n    }\\n</style>\\n\\n<svelte:head>\\n\\t<title>Blog</title>\\n</svelte:head>\\n\\n<ul>\\n\\t{#each posts as post}\\n\\t\\t<div class=\\\"post\\\">\\n            <div class=\\\"date text-sm\\\"> {post.date} </div>\\n            <div class=\\\"w-full\\\">\\n                <h2 class=\\\"text-base font-bold\\\"> \\n                    <a class=\\\"no-underline\\\" rel='prefetch' href='blog/{post.slug}'>{post.title}</a> \\n                </h2>\\n                {#if post.description.length !== 0}\\n                <div class=\\\"font-light text-sm\\\"> \\n                    {post.description}\\n                </div>\\n                {/if}\\n            </div>\\n        </div>\\n\\t{/each}\\n</ul>\"],\"names\":[],\"mappings\":\"AAaC,EAAE,eAAC,CAAC,AACH,MAAM,CAAE,CAAC,CAAC,CAAC,CAAC,GAAG,CAAC,CAAC,CACjB,WAAW,CAAE,GAAG,AACjB,CAAC,AACE,KAAK,eAAC,CAAC,AACH,OAAO,CAAE,IAAI,CACb,cAAc,CAAE,GAAG,CACnB,WAAW,CAAE,QAAQ,CACrB,aAAa,CAAE,IAAI,AACvB,CAAC,AACD,KAAK,eAAC,CAAC,AACH,KAAK,CAAE,IAAI,CACX,YAAY,CAAE,IAAI,CAClB,SAAS,CAAE,CAAC,AAChB,CAAC,AACD,UAAU,eAAC,CAAC,AACR,SAAS,CAAE,IAAI,AACnB,CAAC,AACD,UAAU,eAAC,CAAC,AACR,WAAW,CAAE,GAAG,AACpB,CAAC,AACD,WAAW,eAAC,CAAC,AACT,WAAW,CAAE,GAAG,AACpB,CAAC,AACD,aAAa,eAAC,CAAC,AACX,eAAe,CAAE,IAAI,AACzB,CAAC,AACD,QAAQ,eAAC,CAAC,AACN,SAAS,CAAE,OAAO,AACtB,CAAC,AACD,OAAO,eAAC,CAAC,AACL,KAAK,CAAE,IAAI;IACf,CAAC\"}"
+};
+
+function preload({ params, query }) {
+	return this.fetch(`blog.json`).then(r => r.json()).then(posts => {
+		return { posts };
+	});
+}
+
+const Blog = create_ssr_component(($$result, $$props, $$bindings, $$slots) => {
+	let { posts } = $$props;
+	if ($$props.posts === void 0 && $$bindings.posts && posts !== void 0) $$bindings.posts(posts);
+	$$result.css.add(css$3);
+
+	return `${($$result.head += `${($$result.title = `<title>Blog</title>`, "")}`, "")}
+
+<ul class="${"svelte-1ezv3cy"}">${each(posts, post => `<div class="${"post svelte-1ezv3cy"}"><div class="${"date text-sm svelte-1ezv3cy"}">${escape(post.date)}</div>
+            <div class="${"w-full svelte-1ezv3cy"}"><h2 class="${"text-base font-bold svelte-1ezv3cy"}"><a class="${"no-underline svelte-1ezv3cy"}" rel="${"prefetch"}" href="${"blog/" + escape(post.slug)}">${escape(post.title)}</a></h2>
+                ${post.description.length !== 0
+	? `<div class="${"font-light text-sm svelte-1ezv3cy"}">${escape(post.description)}
+                </div>`
+	: ``}</div>
+        </div>`)}</ul>`;
+});
+
+var component_3 = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    'default': Blog,
+    preload: preload
+});
+
+/* src/routes/blog/[slug].svelte generated by Svelte v3.24.1 */
+
+const css$4 = {
+	code: ".content.svelte-gnxal1 h2{font-size:1.4em;font-weight:500}.content.svelte-gnxal1 pre{background-color:#f9f9f9;box-shadow:inset 1px 1px 5px rgba(0,0,0,0.05);padding:0.5em;border-radius:2px;overflow-x:auto}.content.svelte-gnxal1 pre code{background-color:transparent;padding:0}.content.svelte-gnxal1 ul{line-height:1.5}.content.svelte-gnxal1 li{margin:0 0 0.5em 0}",
+	map: "{\"version\":3,\"file\":\"[slug].svelte\",\"sources\":[\"[slug].svelte\"],\"sourcesContent\":[\"<script context=\\\"module\\\">\\n\\texport async function preload({ params, query }) {\\n\\t\\t// the `slug` parameter is available because\\n\\t\\t// this file is called [slug].svelte\\n\\t\\tconst res = await this.fetch(`blog/${params.slug}.json`);\\n\\t\\tconst data = await res.json();\\n\\n\\t\\tif (res.status === 200) {\\n\\t\\t\\treturn { post: data };\\n\\t\\t} else {\\n\\t\\t\\tthis.error(res.status, data.message);\\n\\t\\t}\\n\\t}\\n</script>\\n\\n<script>\\n\\texport let post;\\n</script>\\n\\n<style>\\n\\t/*\\n\\t\\tBy default, CSS is locally scoped to the component,\\n\\t\\tand any unused styles are dead-code-eliminated.\\n\\t\\tIn this page, Svelte can't know which elements are\\n\\t\\tgoing to appear inside the {{{post.html}}} block,\\n\\t\\tso we have to use the :global(...) modifier to target\\n\\t\\tall elements inside .content\\n\\t*/\\n\\t.content :global(h2) {\\n\\t\\tfont-size: 1.4em;\\n\\t\\tfont-weight: 500;\\n\\t}\\n\\n\\t.content :global(pre) {\\n\\t\\tbackground-color: #f9f9f9;\\n\\t\\tbox-shadow: inset 1px 1px 5px rgba(0,0,0,0.05);\\n\\t\\tpadding: 0.5em;\\n\\t\\tborder-radius: 2px;\\n\\t\\toverflow-x: auto;\\n\\t}\\n\\n\\t.content :global(pre) :global(code) {\\n\\t\\tbackground-color: transparent;\\n\\t\\tpadding: 0;\\n\\t}\\n\\n\\t.content :global(ul) {\\n\\t\\tline-height: 1.5;\\n\\t}\\n\\n\\t.content :global(li) {\\n\\t\\tmargin: 0 0 0.5em 0;\\n\\t}\\n</style>\\n\\n<svelte:head>\\n    <script>\\n        var disqus_config = function () {\\n            let tokens = window.location.href.split('/');\\n            this.page.url = window.location.href;\\n            this.page.identifier = \\\"/\\\" + tokens[tokens.length-1];\\n        };\\n        (function() { // DON'T EDIT BELOW THIS LINE\\n            var d = document, s = d.createElement('script');\\n            s.src = 'https://marckhoury-github-io.disqus.com/embed.js';\\n            s.setAttribute('data-timestamp', +new Date());\\n            (d.head || d.body).appendChild(s);\\n        })();\\n    </script>\\n    <noscript>Please enable JavaScript to view the <a href=\\\"https://disqus.com/?ref_noscript\\\">comments powered by Disqus.</a></noscript>\\n    <title>{post.title}</title>\\n</svelte:head>\\n\\n<h1>{post.title}</h1>\\n\\n<div class='content'>\\n\\t{@html post.html}\\n    {#if post.comments}\\n    <section id=\\\"disqus_thread\\\"></section>\\n    {/if}\\n</div>\\n\"],\"names\":[],\"mappings\":\"AA4BC,sBAAQ,CAAC,AAAQ,EAAE,AAAE,CAAC,AACrB,SAAS,CAAE,KAAK,CAChB,WAAW,CAAE,GAAG,AACjB,CAAC,AAED,sBAAQ,CAAC,AAAQ,GAAG,AAAE,CAAC,AACtB,gBAAgB,CAAE,OAAO,CACzB,UAAU,CAAE,KAAK,CAAC,GAAG,CAAC,GAAG,CAAC,GAAG,CAAC,KAAK,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,IAAI,CAAC,CAC9C,OAAO,CAAE,KAAK,CACd,aAAa,CAAE,GAAG,CAClB,UAAU,CAAE,IAAI,AACjB,CAAC,AAED,sBAAQ,CAAC,AAAQ,GAAG,AAAC,CAAC,AAAQ,IAAI,AAAE,CAAC,AACpC,gBAAgB,CAAE,WAAW,CAC7B,OAAO,CAAE,CAAC,AACX,CAAC,AAED,sBAAQ,CAAC,AAAQ,EAAE,AAAE,CAAC,AACrB,WAAW,CAAE,GAAG,AACjB,CAAC,AAED,sBAAQ,CAAC,AAAQ,EAAE,AAAE,CAAC,AACrB,MAAM,CAAE,CAAC,CAAC,CAAC,CAAC,KAAK,CAAC,CAAC,AACpB,CAAC\"}"
+};
+
+async function preload$1({ params, query }) {
+	// the `slug` parameter is available because
+	// this file is called [slug].svelte
+	const res = await this.fetch(`blog/${params.slug}.json`);
+
+	const data = await res.json();
+
+	if (res.status === 200) {
+		return { post: data };
+	} else {
+		this.error(res.status, data.message);
+	}
+}
+
+const U5Bslugu5D = create_ssr_component(($$result, $$props, $$bindings, $$slots) => {
+	let { post } = $$props;
+	if ($$props.post === void 0 && $$bindings.post && post !== void 0) $$bindings.post(post);
+	$$result.css.add(css$4);
+
+	return `${($$result.head += `<script data-svelte="svelte-puhaqb">var disqus_config = function () {
+            let tokens = window.location.href.split('/');
+            this.page.url = window.location.href;
+            this.page.identifier = "/" + tokens[tokens.length-1];
+        };
+        (function() { // DON'T EDIT BELOW THIS LINE
+            var d = document, s = d.createElement('script');
+            s.src = 'https://marckhoury-github-io.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script><noscript data-svelte="svelte-puhaqb">Please enable JavaScript to view the <a href="${"https://disqus.com/?ref_noscript"}" data-svelte="svelte-puhaqb">comments powered by Disqus.</a></noscript>${($$result.title = `<title>${escape(post.title)}</title>`, "")}`, "")}
+
+<h1>${escape(post.title)}</h1>
+
+<div class="${"content svelte-gnxal1"}">${post.html}
+    ${post.comments
+	? `<section id="${"disqus_thread"}"></section>`
+	: ``}</div>`;
+});
+
+var component_4 = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    'default': U5Bslugu5D,
+    preload: preload$1
+});
+
+/* node_modules/svelte-icons/components/IconBase.svelte generated by Svelte v3.24.1 */
+
+const css$5 = {
+	code: "svg.svelte-c8tyih{stroke:currentColor;fill:currentColor;stroke-width:0;width:100%;height:auto;max-height:100%}",
+	map: "{\"version\":3,\"file\":\"IconBase.svelte\",\"sources\":[\"IconBase.svelte\"],\"sourcesContent\":[\"<script>\\n  export let title = null;\\n  export let viewBox;\\n</script>\\n\\n<style>\\n  svg {\\n    stroke: currentColor;\\n    fill: currentColor;\\n    stroke-width: 0;\\n    width: 100%;\\n    height: auto;\\n    max-height: 100%;\\n  }  \\n</style>\\n\\n<svg xmlns=\\\"http://www.w3.org/2000/svg\\\" {viewBox}>\\n  {#if title}\\n    <title>{title}</title>\\n  {/if}\\n  <slot />\\n</svg>\\n\"],\"names\":[],\"mappings\":\"AAME,GAAG,cAAC,CAAC,AACH,MAAM,CAAE,YAAY,CACpB,IAAI,CAAE,YAAY,CAClB,YAAY,CAAE,CAAC,CACf,KAAK,CAAE,IAAI,CACX,MAAM,CAAE,IAAI,CACZ,UAAU,CAAE,IAAI,AAClB,CAAC\"}"
+};
+
+const IconBase = create_ssr_component(($$result, $$props, $$bindings, $$slots) => {
+	let { title = null } = $$props;
+	let { viewBox } = $$props;
+	if ($$props.title === void 0 && $$bindings.title && title !== void 0) $$bindings.title(title);
+	if ($$props.viewBox === void 0 && $$bindings.viewBox && viewBox !== void 0) $$bindings.viewBox(viewBox);
+	$$result.css.add(css$5);
+	return `<svg xmlns="${"http://www.w3.org/2000/svg"}"${add_attribute("viewBox", viewBox, 0)} class="${"svelte-c8tyih"}">${title ? `<title>${escape(title)}</title>` : ``}${$$slots.default ? $$slots.default({}) : ``}</svg>`;
+});
+
+/* node_modules/svelte-icons/fa/FaTwitter.svelte generated by Svelte v3.24.1 */
+
+const FaTwitter = create_ssr_component(($$result, $$props, $$bindings, $$slots) => {
+	return `${validate_component(IconBase, "IconBase").$$render($$result, Object.assign({ viewBox: "0 0 512 512" }, $$props), {}, {
+		default: () => `<path d="${"M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"}"></path>`
+	})}`;
+});
+
+/* node_modules/svelte-icons/fa/FaGithub.svelte generated by Svelte v3.24.1 */
+
+const FaGithub = create_ssr_component(($$result, $$props, $$bindings, $$slots) => {
+	return `${validate_component(IconBase, "IconBase").$$render($$result, Object.assign({ viewBox: "0 0 496 512" }, $$props), {}, {
+		default: () => `<path d="${"M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"}"></path>`
+	})}`;
+});
+
+/* node_modules/svelte-icons/fa/FaLinkedin.svelte generated by Svelte v3.24.1 */
+
+const FaLinkedin = create_ssr_component(($$result, $$props, $$bindings, $$slots) => {
+	return `${validate_component(IconBase, "IconBase").$$render($$result, Object.assign({ viewBox: "0 0 448 512" }, $$props), {}, {
+		default: () => `<path d="${"M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"}"></path>`
+	})}`;
+});
+
+/* node_modules/svelte-icons/fa/FaTwitch.svelte generated by Svelte v3.24.1 */
+
+const FaTwitch = create_ssr_component(($$result, $$props, $$bindings, $$slots) => {
+	return `${validate_component(IconBase, "IconBase").$$render($$result, Object.assign({ viewBox: "0 0 448 512" }, $$props), {}, {
+		default: () => `<path d="${"M40.1 32L10 108.9v314.3h107V480h60.2l56.8-56.8h87l117-117V32H40.1zm357.8 254.1L331 353H224l-56.8 56.8V353H76.9V72.1h321v214zM331 149v116.9h-40.1V149H331zm-107 0v116.9h-40.1V149H224z"}"></path>`
+	})}`;
+});
+
+/* src/components/Nav.svelte generated by Svelte v3.24.1 */
+
+const css$6 = {
+	code: "nav.svelte-4d1jzv{border-bottom:1px solid rgba(212,70,56,0.1);font-weight:300;padding:0 1em;display:flex;flex-direction:row;justify-content:space-around}ul.svelte-4d1jzv{margin:0;padding:0}ul.svelte-4d1jzv::after{content:'';display:block;clear:both}li.svelte-4d1jzv{display:block;float:left}[aria-current].svelte-4d1jzv{position:relative;display:inline-block}[aria-current].svelte-4d1jzv::after{position:absolute;content:'';width:calc(100% - 1em);height:2px;background-color:rgb(212,70,56);display:block;bottom:-1px}a.svelte-4d1jzv{text-decoration:none;padding:1em 0.5em;display:block}.font-bold.svelte-4d1jzv{font-weight:700}.icon.svelte-4d1jzv{width:32px;height:32px}.twitter.svelte-4d1jzv{color:#1DA1F2}.linkedin.svelte-4d1jzv{color:#2867B2}.twitch.svelte-4d1jzv{color:#6441A5}",
+	map: "{\"version\":3,\"file\":\"Nav.svelte\",\"sources\":[\"Nav.svelte\"],\"sourcesContent\":[\"<script>\\n    import Twitter from 'svelte-icons/fa/FaTwitter.svelte';\\n    import Github from 'svelte-icons/fa/FaGithub.svelte';\\n    import Linkedin from 'svelte-icons/fa/FaLinkedin.svelte';\\n    import Twitch from 'svelte-icons/fa/FaTwitch.svelte';\\n\\texport let segment;\\n</script>\\n\\n<style>\\n\\tnav {\\n\\t\\tborder-bottom: 1px solid rgba(212,70,56,0.1);\\n\\t\\tfont-weight: 300;\\n\\t\\tpadding: 0 1em;\\n        display: flex;\\n        flex-direction: row;\\n        justify-content: space-around;\\n\\t}\\n\\n\\tul {\\n\\t\\tmargin: 0;\\n\\t\\tpadding: 0;\\n\\t}\\n\\n\\t/* clearfix */\\n\\tul::after {\\n\\t\\tcontent: '';\\n\\t\\tdisplay: block;\\n\\t\\tclear: both;\\n\\t}\\n\\n\\tli {\\n\\t\\tdisplay: block;\\n\\t\\tfloat: left;\\n\\t}\\n\\n\\t[aria-current] {\\n\\t\\tposition: relative;\\n\\t\\tdisplay: inline-block;\\n\\t}\\n\\n\\t[aria-current]::after {\\n\\t\\tposition: absolute;\\n\\t\\tcontent: '';\\n\\t\\twidth: calc(100% - 1em);\\n\\t\\theight: 2px;\\n\\t\\tbackground-color: rgb(212,70,56);\\n\\t\\tdisplay: block;\\n\\t\\tbottom: -1px;\\n\\t}\\n\\n\\ta {\\n\\t\\ttext-decoration: none;\\n\\t\\tpadding: 1em 0.5em;\\n\\t\\tdisplay: block;\\n\\t}\\n\\n    .font-bold {\\n        font-weight: 700;\\n    }   \\n \\n    .icon {\\n        width: 32px;\\n        height: 32px;\\n    }\\n    \\n    .twitter {\\n        color: #1DA1F2;\\n    }\\n    .linkedin {\\n        color: #2867B2;\\n    }\\n    .twitch {\\n        color: #6441A5;\\n    } \\n</style>\\n\\n<nav>\\n\\t<ul>\\n\\t\\t<li class=\\\"font-bold\\\"><a aria-current=\\\"{segment === undefined ? 'page' : undefined}\\\" href=\\\".\\\">home</a></li>\\n        <li class=\\\"font-bold\\\"><a aria-current=\\\"{segment === 'publications' ? 'page' : undefined}\\\" href=\\\"publications\\\">publications</a></li>\\n        <li class=\\\"font-bold\\\"><a aria-current=\\\"{segment === 'hobbies' ? 'page' : undefined}\\\" href=\\\"hobbies\\\">hobbies</a></li>\\n\\t\\t<li class=\\\"font-bold\\\"><a rel=prefetch aria-current=\\\"{segment === 'blog' ? 'page' : undefined}\\\" href=\\\"blog\\\">blog</a></li>\\n    </ul>\\n    <ul>\\n\\t\\t<li><a href=\\\"https://twitter.com/marckkhoury\\\"><div class=\\\"icon twitter\\\"><Twitter/></div></a></li>\\n\\t\\t<li><a href=\\\"https://github.com/marckhoury\\\"><div class=\\\"icon\\\"><Github/></div></a></li>\\n        <li><a href=\\\"https://www.linkedin.com/in/marckhoury/\\\"><div class=\\\"icon linkedin\\\"><Linkedin/></div></a></li>\\n        <li><a href=\\\"https://www.twitch.tv/thinkswithtwitch\\\"><div class=\\\"icon twitch\\\"><Twitch/></div></a></li>\\n    </ul>\\n</nav>\\n\"],\"names\":[],\"mappings\":\"AASC,GAAG,cAAC,CAAC,AACJ,aAAa,CAAE,GAAG,CAAC,KAAK,CAAC,KAAK,GAAG,CAAC,EAAE,CAAC,EAAE,CAAC,GAAG,CAAC,CAC5C,WAAW,CAAE,GAAG,CAChB,OAAO,CAAE,CAAC,CAAC,GAAG,CACR,OAAO,CAAE,IAAI,CACb,cAAc,CAAE,GAAG,CACnB,eAAe,CAAE,YAAY,AACpC,CAAC,AAED,EAAE,cAAC,CAAC,AACH,MAAM,CAAE,CAAC,CACT,OAAO,CAAE,CAAC,AACX,CAAC,AAGD,gBAAE,OAAO,AAAC,CAAC,AACV,OAAO,CAAE,EAAE,CACX,OAAO,CAAE,KAAK,CACd,KAAK,CAAE,IAAI,AACZ,CAAC,AAED,EAAE,cAAC,CAAC,AACH,OAAO,CAAE,KAAK,CACd,KAAK,CAAE,IAAI,AACZ,CAAC,AAED,CAAC,YAAY,CAAC,cAAC,CAAC,AACf,QAAQ,CAAE,QAAQ,CAClB,OAAO,CAAE,YAAY,AACtB,CAAC,AAED,CAAC,YAAY,eAAC,OAAO,AAAC,CAAC,AACtB,QAAQ,CAAE,QAAQ,CAClB,OAAO,CAAE,EAAE,CACX,KAAK,CAAE,KAAK,IAAI,CAAC,CAAC,CAAC,GAAG,CAAC,CACvB,MAAM,CAAE,GAAG,CACX,gBAAgB,CAAE,IAAI,GAAG,CAAC,EAAE,CAAC,EAAE,CAAC,CAChC,OAAO,CAAE,KAAK,CACd,MAAM,CAAE,IAAI,AACb,CAAC,AAED,CAAC,cAAC,CAAC,AACF,eAAe,CAAE,IAAI,CACrB,OAAO,CAAE,GAAG,CAAC,KAAK,CAClB,OAAO,CAAE,KAAK,AACf,CAAC,AAEE,UAAU,cAAC,CAAC,AACR,WAAW,CAAE,GAAG,AACpB,CAAC,AAED,KAAK,cAAC,CAAC,AACH,KAAK,CAAE,IAAI,CACX,MAAM,CAAE,IAAI,AAChB,CAAC,AAED,QAAQ,cAAC,CAAC,AACN,KAAK,CAAE,OAAO,AAClB,CAAC,AACD,SAAS,cAAC,CAAC,AACP,KAAK,CAAE,OAAO,AAClB,CAAC,AACD,OAAO,cAAC,CAAC,AACL,KAAK,CAAE,OAAO,AAClB,CAAC\"}"
+};
+
+const Nav = create_ssr_component(($$result, $$props, $$bindings, $$slots) => {
+	let { segment } = $$props;
+	if ($$props.segment === void 0 && $$bindings.segment && segment !== void 0) $$bindings.segment(segment);
+	$$result.css.add(css$6);
+
+	return `<nav class="${"svelte-4d1jzv"}"><ul class="${"svelte-4d1jzv"}"><li class="${"font-bold svelte-4d1jzv"}"><a${add_attribute("aria-current", segment === undefined ? "page" : undefined, 0)} href="${"."}" class="${"svelte-4d1jzv"}">home</a></li>
+        <li class="${"font-bold svelte-4d1jzv"}"><a${add_attribute("aria-current", segment === "publications" ? "page" : undefined, 0)} href="${"publications"}" class="${"svelte-4d1jzv"}">publications</a></li>
+        <li class="${"font-bold svelte-4d1jzv"}"><a${add_attribute("aria-current", segment === "hobbies" ? "page" : undefined, 0)} href="${"hobbies"}" class="${"svelte-4d1jzv"}">hobbies</a></li>
+		<li class="${"font-bold svelte-4d1jzv"}"><a rel="${"prefetch"}"${add_attribute("aria-current", segment === "blog" ? "page" : undefined, 0)} href="${"blog"}" class="${"svelte-4d1jzv"}">blog</a></li></ul>
+    <ul class="${"svelte-4d1jzv"}"><li class="${"svelte-4d1jzv"}"><a href="${"https://twitter.com/marckkhoury"}" class="${"svelte-4d1jzv"}"><div class="${"icon twitter svelte-4d1jzv"}">${validate_component(FaTwitter, "Twitter").$$render($$result, {}, {}, {})}</div></a></li>
+		<li class="${"svelte-4d1jzv"}"><a href="${"https://github.com/marckhoury"}" class="${"svelte-4d1jzv"}"><div class="${"icon svelte-4d1jzv"}">${validate_component(FaGithub, "Github").$$render($$result, {}, {}, {})}</div></a></li>
+        <li class="${"svelte-4d1jzv"}"><a href="${"https://www.linkedin.com/in/marckhoury/"}" class="${"svelte-4d1jzv"}"><div class="${"icon linkedin svelte-4d1jzv"}">${validate_component(FaLinkedin, "Linkedin").$$render($$result, {}, {}, {})}</div></a></li>
+        <li class="${"svelte-4d1jzv"}"><a href="${"https://www.twitch.tv/thinkswithtwitch"}" class="${"svelte-4d1jzv"}"><div class="${"icon twitch svelte-4d1jzv"}">${validate_component(FaTwitch, "Twitch").$$render($$result, {}, {}, {})}</div></a></li></ul></nav>`;
+});
+
+/* src/routes/_layout.svelte generated by Svelte v3.24.1 */
+
+const css$7 = {
+	code: "main.svelte-1uhnsl8{position:relative;max-width:56em;background-color:white;padding:2em;margin:0 auto;box-sizing:border-box}",
+	map: "{\"version\":3,\"file\":\"_layout.svelte\",\"sources\":[\"_layout.svelte\"],\"sourcesContent\":[\"<script>\\n\\timport Nav from '../components/Nav.svelte';\\n\\n\\texport let segment;\\n</script>\\n\\n<style>\\n\\tmain {\\n\\t\\tposition: relative;\\n\\t\\tmax-width: 56em;\\n\\t\\tbackground-color: white;\\n\\t\\tpadding: 2em;\\n\\t\\tmargin: 0 auto;\\n\\t\\tbox-sizing: border-box;\\n\\t}\\n</style>\\n\\n<Nav {segment}/>\\n\\n<main>\\n\\t<slot></slot>\\n</main>\"],\"names\":[],\"mappings\":\"AAOC,IAAI,eAAC,CAAC,AACL,QAAQ,CAAE,QAAQ,CAClB,SAAS,CAAE,IAAI,CACf,gBAAgB,CAAE,KAAK,CACvB,OAAO,CAAE,GAAG,CACZ,MAAM,CAAE,CAAC,CAAC,IAAI,CACd,UAAU,CAAE,UAAU,AACvB,CAAC\"}"
+};
+
+const Layout = create_ssr_component(($$result, $$props, $$bindings, $$slots) => {
+	let { segment } = $$props;
+	if ($$props.segment === void 0 && $$bindings.segment && segment !== void 0) $$bindings.segment(segment);
+	$$result.css.add(css$7);
+
+	return `${validate_component(Nav, "Nav").$$render($$result, { segment }, {}, {})}
+
+<main class="${"svelte-1uhnsl8"}">${$$slots.default ? $$slots.default({}) : ``}</main>`;
+});
+
+var root_comp = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    'default': Layout
+});
+
+/* src/routes/_error.svelte generated by Svelte v3.24.1 */
+
+const css$8 = {
+	code: "h1.svelte-8od9u6,p.svelte-8od9u6{margin:0 auto}h1.svelte-8od9u6{font-size:2.8em;font-weight:700;margin:0 0 0.5em 0}p.svelte-8od9u6{margin:1em auto}@media(min-width: 480px){h1.svelte-8od9u6{font-size:4em}}",
+	map: "{\"version\":3,\"file\":\"_error.svelte\",\"sources\":[\"_error.svelte\"],\"sourcesContent\":[\"<script>\\n\\texport let status;\\n\\texport let error;\\n\\n\\tconst dev = undefined === 'development';\\n</script>\\n\\n<style>\\n\\th1, p {\\n\\t\\tmargin: 0 auto;\\n\\t}\\n\\n\\th1 {\\n\\t\\tfont-size: 2.8em;\\n\\t\\tfont-weight: 700;\\n\\t\\tmargin: 0 0 0.5em 0;\\n\\t}\\n\\n\\tp {\\n\\t\\tmargin: 1em auto;\\n\\t}\\n\\n\\t@media (min-width: 480px) {\\n\\t\\th1 {\\n\\t\\t\\tfont-size: 4em;\\n\\t\\t}\\n\\t}\\n</style>\\n\\n<svelte:head>\\n\\t<title>{status}</title>\\n</svelte:head>\\n\\n<h1>{status}</h1>\\n\\n<p>{error.message}</p>\\n\\n{#if dev && error.stack}\\n\\t<pre>{error.stack}</pre>\\n{/if}\\n\"],\"names\":[],\"mappings\":\"AAQC,gBAAE,CAAE,CAAC,cAAC,CAAC,AACN,MAAM,CAAE,CAAC,CAAC,IAAI,AACf,CAAC,AAED,EAAE,cAAC,CAAC,AACH,SAAS,CAAE,KAAK,CAChB,WAAW,CAAE,GAAG,CAChB,MAAM,CAAE,CAAC,CAAC,CAAC,CAAC,KAAK,CAAC,CAAC,AACpB,CAAC,AAED,CAAC,cAAC,CAAC,AACF,MAAM,CAAE,GAAG,CAAC,IAAI,AACjB,CAAC,AAED,MAAM,AAAC,YAAY,KAAK,CAAC,AAAC,CAAC,AAC1B,EAAE,cAAC,CAAC,AACH,SAAS,CAAE,GAAG,AACf,CAAC,AACF,CAAC\"}"
+};
+
+const Error$1 = create_ssr_component(($$result, $$props, $$bindings, $$slots) => {
+	let { status } = $$props;
+	let { error } = $$props;
+	if ($$props.status === void 0 && $$bindings.status && status !== void 0) $$bindings.status(status);
+	if ($$props.error === void 0 && $$bindings.error && error !== void 0) $$bindings.error(error);
+	$$result.css.add(css$8);
+
+	return `${($$result.head += `${($$result.title = `<title>${escape(status)}</title>`, "")}`, "")}
+
+<h1 class="${"svelte-8od9u6"}">${escape(status)}</h1>
+
+<p class="${"svelte-8od9u6"}">${escape(error.message)}</p>
+
+${ ``}`;
+});
+
+// This file is generated by Sapper — do not edit it!
+
+const d = decodeURIComponent;
+
+const manifest = {
+	server_routes: [
+		{
+			// blog/index.json.js
+			pattern: /^\/blog\.json$/,
+			handlers: route_0,
+			params: () => ({})
+		},
+
+		{
+			// blog/[slug].json.js
+			pattern: /^\/blog\/([^\/]+?)\.json$/,
+			handlers: route_1,
+			params: match => ({ slug: d(match[1]) })
+		}
+	],
+
+	pages: [
+		{
+			// index.svelte
+			pattern: /^\/$/,
+			parts: [
+				{ name: "index", file: "index.svelte", component: component_0 }
+			]
+		},
+
+		{
+			// publications.svelte
+			pattern: /^\/publications\/?$/,
+			parts: [
+				{ name: "publications", file: "publications.svelte", component: component_1 }
+			]
+		},
+
+		{
+			// hobbies.svelte
+			pattern: /^\/hobbies\/?$/,
+			parts: [
+				{ name: "hobbies", file: "hobbies.svelte", component: component_2 }
+			]
+		},
+
+		{
+			// blog/index.svelte
+			pattern: /^\/blog\/?$/,
+			parts: [
+				{ name: "blog", file: "blog/index.svelte", component: component_3 }
+			]
+		},
+
+		{
+			// blog/[slug].svelte
+			pattern: /^\/blog\/([^\/]+?)\/?$/,
+			parts: [
+				null,
+				{ name: "blog_$slug", file: "blog/[slug].svelte", component: component_4, params: match => ({ slug: d(match[1]) }) }
+			]
+		}
+	],
+
+	root_comp,
+	error: Error$1
+};
+
+const build_dir = "__sapper__/build";
+
+const subscriber_queue = [];
+/**
+ * Create a `Writable` store that allows both updating and reading by subscription.
+ * @param {*=}value initial value
+ * @param {StartStopNotifier=}start start and stop notifications for subscriptions
+ */
+function writable(value, start = noop) {
+    let stop;
+    const subscribers = [];
+    function set(new_value) {
+        if (safe_not_equal(value, new_value)) {
+            value = new_value;
+            if (stop) { // store is ready
+                const run_queue = !subscriber_queue.length;
+                for (let i = 0; i < subscribers.length; i += 1) {
+                    const s = subscribers[i];
+                    s[1]();
+                    subscriber_queue.push(s, value);
+                }
+                if (run_queue) {
+                    for (let i = 0; i < subscriber_queue.length; i += 2) {
+                        subscriber_queue[i][0](subscriber_queue[i + 1]);
+                    }
+                    subscriber_queue.length = 0;
+                }
+            }
+        }
+    }
+    function update(fn) {
+        set(fn(value));
+    }
+    function subscribe(run, invalidate = noop) {
+        const subscriber = [run, invalidate];
+        subscribers.push(subscriber);
+        if (subscribers.length === 1) {
+            stop = start(set) || noop;
+        }
+        run(value);
+        return () => {
+            const index = subscribers.indexOf(subscriber);
+            if (index !== -1) {
+                subscribers.splice(index, 1);
+            }
+            if (subscribers.length === 0) {
+                stop();
+                stop = null;
+            }
+        };
+    }
+    return { set, update, subscribe };
+}
+
+const CONTEXT_KEY = {};
+
+/* src/node_modules/@sapper/internal/App.svelte generated by Svelte v3.24.1 */
+
+const App = create_ssr_component(($$result, $$props, $$bindings, $$slots) => {
+	let { stores } = $$props;
+	let { error } = $$props;
+	let { status } = $$props;
+	let { segments } = $$props;
+	let { level0 } = $$props;
+	let { level1 = null } = $$props;
+	let { notify } = $$props;
+	afterUpdate(notify);
+	setContext(CONTEXT_KEY, stores);
+	if ($$props.stores === void 0 && $$bindings.stores && stores !== void 0) $$bindings.stores(stores);
+	if ($$props.error === void 0 && $$bindings.error && error !== void 0) $$bindings.error(error);
+	if ($$props.status === void 0 && $$bindings.status && status !== void 0) $$bindings.status(status);
+	if ($$props.segments === void 0 && $$bindings.segments && segments !== void 0) $$bindings.segments(segments);
+	if ($$props.level0 === void 0 && $$bindings.level0 && level0 !== void 0) $$bindings.level0(level0);
+	if ($$props.level1 === void 0 && $$bindings.level1 && level1 !== void 0) $$bindings.level1(level1);
+	if ($$props.notify === void 0 && $$bindings.notify && notify !== void 0) $$bindings.notify(notify);
+
+	return `
+
+
+${validate_component(Layout, "Layout").$$render($$result, Object.assign({ segment: segments[0] }, level0.props), {}, {
+		default: () => `${error
+		? `${validate_component(Error$1, "Error").$$render($$result, { error, status }, {}, {})}`
+		: `${validate_component(level1.component || missing_component, "svelte:component").$$render($$result, Object.assign(level1.props), {}, {})}`}`
+	})}`;
+});
+
+/**
+ * @param typeMap [Object] Map of MIME type -> Array[extensions]
+ * @param ...
+ */
+function Mime() {
+  this._types = Object.create(null);
+  this._extensions = Object.create(null);
+
+  for (var i = 0; i < arguments.length; i++) {
+    this.define(arguments[i]);
+  }
+
+  this.define = this.define.bind(this);
+  this.getType = this.getType.bind(this);
+  this.getExtension = this.getExtension.bind(this);
+}
+
+/**
+ * Define mimetype -> extension mappings.  Each key is a mime-type that maps
+ * to an array of extensions associated with the type.  The first extension is
+ * used as the default extension for the type.
+ *
+ * e.g. mime.define({'audio/ogg', ['oga', 'ogg', 'spx']});
+ *
+ * If a type declares an extension that has already been defined, an error will
+ * be thrown.  To suppress this error and force the extension to be associated
+ * with the new type, pass `force`=true.  Alternatively, you may prefix the
+ * extension with "*" to map the type to extension, without mapping the
+ * extension to the type.
+ *
+ * e.g. mime.define({'audio/wav', ['wav']}, {'audio/x-wav', ['*wav']});
+ *
+ *
+ * @param map (Object) type definitions
+ * @param force (Boolean) if true, force overriding of existing definitions
+ */
+Mime.prototype.define = function(typeMap, force) {
+  for (var type in typeMap) {
+    var extensions = typeMap[type].map(function(t) {return t.toLowerCase()});
+    type = type.toLowerCase();
+
+    for (var i = 0; i < extensions.length; i++) {
+      var ext = extensions[i];
+
+      // '*' prefix = not the preferred type for this extension.  So fixup the
+      // extension, and skip it.
+      if (ext[0] == '*') {
+        continue;
+      }
+
+      if (!force && (ext in this._types)) {
+        throw new Error(
+          'Attempt to change mapping for "' + ext +
+          '" extension from "' + this._types[ext] + '" to "' + type +
+          '". Pass `force=true` to allow this, otherwise remove "' + ext +
+          '" from the list of extensions for "' + type + '".'
+        );
+      }
+
+      this._types[ext] = type;
+    }
+
+    // Use first extension as default
+    if (force || !this._extensions[type]) {
+      var ext = extensions[0];
+      this._extensions[type] = (ext[0] != '*') ? ext : ext.substr(1);
+    }
+  }
+};
+
+/**
+ * Lookup a mime type based on extension
+ */
+Mime.prototype.getType = function(path) {
+  path = String(path);
+  var last = path.replace(/^.*[/\\]/, '').toLowerCase();
+  var ext = last.replace(/^.*\./, '').toLowerCase();
+
+  var hasPath = last.length < path.length;
+  var hasDot = ext.length < last.length - 1;
+
+  return (hasDot || !hasPath) && this._types[ext] || null;
+};
+
+/**
+ * Return file extension associated with a mime type
+ */
+Mime.prototype.getExtension = function(type) {
+  type = /^\s*([^;\s]*)/.test(type) && RegExp.$1;
+  return type && this._extensions[type.toLowerCase()] || null;
+};
+
+var Mime_1 = Mime;
+
+var standard = {"application/andrew-inset":["ez"],"application/applixware":["aw"],"application/atom+xml":["atom"],"application/atomcat+xml":["atomcat"],"application/atomsvc+xml":["atomsvc"],"application/bdoc":["bdoc"],"application/ccxml+xml":["ccxml"],"application/cdmi-capability":["cdmia"],"application/cdmi-container":["cdmic"],"application/cdmi-domain":["cdmid"],"application/cdmi-object":["cdmio"],"application/cdmi-queue":["cdmiq"],"application/cu-seeme":["cu"],"application/dash+xml":["mpd"],"application/davmount+xml":["davmount"],"application/docbook+xml":["dbk"],"application/dssc+der":["dssc"],"application/dssc+xml":["xdssc"],"application/ecmascript":["ecma","es"],"application/emma+xml":["emma"],"application/epub+zip":["epub"],"application/exi":["exi"],"application/font-tdpfr":["pfr"],"application/geo+json":["geojson"],"application/gml+xml":["gml"],"application/gpx+xml":["gpx"],"application/gxf":["gxf"],"application/gzip":["gz"],"application/hjson":["hjson"],"application/hyperstudio":["stk"],"application/inkml+xml":["ink","inkml"],"application/ipfix":["ipfix"],"application/java-archive":["jar","war","ear"],"application/java-serialized-object":["ser"],"application/java-vm":["class"],"application/javascript":["js","mjs"],"application/json":["json","map"],"application/json5":["json5"],"application/jsonml+json":["jsonml"],"application/ld+json":["jsonld"],"application/lost+xml":["lostxml"],"application/mac-binhex40":["hqx"],"application/mac-compactpro":["cpt"],"application/mads+xml":["mads"],"application/manifest+json":["webmanifest"],"application/marc":["mrc"],"application/marcxml+xml":["mrcx"],"application/mathematica":["ma","nb","mb"],"application/mathml+xml":["mathml"],"application/mbox":["mbox"],"application/mediaservercontrol+xml":["mscml"],"application/metalink+xml":["metalink"],"application/metalink4+xml":["meta4"],"application/mets+xml":["mets"],"application/mods+xml":["mods"],"application/mp21":["m21","mp21"],"application/mp4":["mp4s","m4p"],"application/msword":["doc","dot"],"application/mxf":["mxf"],"application/n-quads":["nq"],"application/n-triples":["nt"],"application/octet-stream":["bin","dms","lrf","mar","so","dist","distz","pkg","bpk","dump","elc","deploy","exe","dll","deb","dmg","iso","img","msi","msp","msm","buffer"],"application/oda":["oda"],"application/oebps-package+xml":["opf"],"application/ogg":["ogx"],"application/omdoc+xml":["omdoc"],"application/onenote":["onetoc","onetoc2","onetmp","onepkg"],"application/oxps":["oxps"],"application/patch-ops-error+xml":["xer"],"application/pdf":["pdf"],"application/pgp-encrypted":["pgp"],"application/pgp-signature":["asc","sig"],"application/pics-rules":["prf"],"application/pkcs10":["p10"],"application/pkcs7-mime":["p7m","p7c"],"application/pkcs7-signature":["p7s"],"application/pkcs8":["p8"],"application/pkix-attr-cert":["ac"],"application/pkix-cert":["cer"],"application/pkix-crl":["crl"],"application/pkix-pkipath":["pkipath"],"application/pkixcmp":["pki"],"application/pls+xml":["pls"],"application/postscript":["ai","eps","ps"],"application/pskc+xml":["pskcxml"],"application/raml+yaml":["raml"],"application/rdf+xml":["rdf","owl"],"application/reginfo+xml":["rif"],"application/relax-ng-compact-syntax":["rnc"],"application/resource-lists+xml":["rl"],"application/resource-lists-diff+xml":["rld"],"application/rls-services+xml":["rs"],"application/rpki-ghostbusters":["gbr"],"application/rpki-manifest":["mft"],"application/rpki-roa":["roa"],"application/rsd+xml":["rsd"],"application/rss+xml":["rss"],"application/rtf":["rtf"],"application/sbml+xml":["sbml"],"application/scvp-cv-request":["scq"],"application/scvp-cv-response":["scs"],"application/scvp-vp-request":["spq"],"application/scvp-vp-response":["spp"],"application/sdp":["sdp"],"application/set-payment-initiation":["setpay"],"application/set-registration-initiation":["setreg"],"application/shf+xml":["shf"],"application/sieve":["siv","sieve"],"application/smil+xml":["smi","smil"],"application/sparql-query":["rq"],"application/sparql-results+xml":["srx"],"application/srgs":["gram"],"application/srgs+xml":["grxml"],"application/sru+xml":["sru"],"application/ssdl+xml":["ssdl"],"application/ssml+xml":["ssml"],"application/tei+xml":["tei","teicorpus"],"application/thraud+xml":["tfi"],"application/timestamped-data":["tsd"],"application/voicexml+xml":["vxml"],"application/wasm":["wasm"],"application/widget":["wgt"],"application/winhlp":["hlp"],"application/wsdl+xml":["wsdl"],"application/wspolicy+xml":["wspolicy"],"application/xaml+xml":["xaml"],"application/xcap-diff+xml":["xdf"],"application/xenc+xml":["xenc"],"application/xhtml+xml":["xhtml","xht"],"application/xml":["xml","xsl","xsd","rng"],"application/xml-dtd":["dtd"],"application/xop+xml":["xop"],"application/xproc+xml":["xpl"],"application/xslt+xml":["xslt"],"application/xspf+xml":["xspf"],"application/xv+xml":["mxml","xhvml","xvml","xvm"],"application/yang":["yang"],"application/yin+xml":["yin"],"application/zip":["zip"],"audio/3gpp":["*3gpp"],"audio/adpcm":["adp"],"audio/basic":["au","snd"],"audio/midi":["mid","midi","kar","rmi"],"audio/mp3":["*mp3"],"audio/mp4":["m4a","mp4a"],"audio/mpeg":["mpga","mp2","mp2a","mp3","m2a","m3a"],"audio/ogg":["oga","ogg","spx"],"audio/s3m":["s3m"],"audio/silk":["sil"],"audio/wav":["wav"],"audio/wave":["*wav"],"audio/webm":["weba"],"audio/xm":["xm"],"font/collection":["ttc"],"font/otf":["otf"],"font/ttf":["ttf"],"font/woff":["woff"],"font/woff2":["woff2"],"image/aces":["exr"],"image/apng":["apng"],"image/bmp":["bmp"],"image/cgm":["cgm"],"image/dicom-rle":["drle"],"image/emf":["emf"],"image/fits":["fits"],"image/g3fax":["g3"],"image/gif":["gif"],"image/heic":["heic"],"image/heic-sequence":["heics"],"image/heif":["heif"],"image/heif-sequence":["heifs"],"image/ief":["ief"],"image/jls":["jls"],"image/jp2":["jp2","jpg2"],"image/jpeg":["jpeg","jpg","jpe"],"image/jpm":["jpm"],"image/jpx":["jpx","jpf"],"image/jxr":["jxr"],"image/ktx":["ktx"],"image/png":["png"],"image/sgi":["sgi"],"image/svg+xml":["svg","svgz"],"image/t38":["t38"],"image/tiff":["tif","tiff"],"image/tiff-fx":["tfx"],"image/webp":["webp"],"image/wmf":["wmf"],"message/disposition-notification":["disposition-notification"],"message/global":["u8msg"],"message/global-delivery-status":["u8dsn"],"message/global-disposition-notification":["u8mdn"],"message/global-headers":["u8hdr"],"message/rfc822":["eml","mime"],"model/3mf":["3mf"],"model/gltf+json":["gltf"],"model/gltf-binary":["glb"],"model/iges":["igs","iges"],"model/mesh":["msh","mesh","silo"],"model/stl":["stl"],"model/vrml":["wrl","vrml"],"model/x3d+binary":["*x3db","x3dbz"],"model/x3d+fastinfoset":["x3db"],"model/x3d+vrml":["*x3dv","x3dvz"],"model/x3d+xml":["x3d","x3dz"],"model/x3d-vrml":["x3dv"],"text/cache-manifest":["appcache","manifest"],"text/calendar":["ics","ifb"],"text/coffeescript":["coffee","litcoffee"],"text/css":["css"],"text/csv":["csv"],"text/html":["html","htm","shtml"],"text/jade":["jade"],"text/jsx":["jsx"],"text/less":["less"],"text/markdown":["markdown","md"],"text/mathml":["mml"],"text/mdx":["mdx"],"text/n3":["n3"],"text/plain":["txt","text","conf","def","list","log","in","ini"],"text/richtext":["rtx"],"text/rtf":["*rtf"],"text/sgml":["sgml","sgm"],"text/shex":["shex"],"text/slim":["slim","slm"],"text/stylus":["stylus","styl"],"text/tab-separated-values":["tsv"],"text/troff":["t","tr","roff","man","me","ms"],"text/turtle":["ttl"],"text/uri-list":["uri","uris","urls"],"text/vcard":["vcard"],"text/vtt":["vtt"],"text/xml":["*xml"],"text/yaml":["yaml","yml"],"video/3gpp":["3gp","3gpp"],"video/3gpp2":["3g2"],"video/h261":["h261"],"video/h263":["h263"],"video/h264":["h264"],"video/jpeg":["jpgv"],"video/jpm":["*jpm","jpgm"],"video/mj2":["mj2","mjp2"],"video/mp2t":["ts"],"video/mp4":["mp4","mp4v","mpg4"],"video/mpeg":["mpeg","mpg","mpe","m1v","m2v"],"video/ogg":["ogv"],"video/quicktime":["qt","mov"],"video/webm":["webm"]};
+
+var lite = new Mime_1(standard);
+
+function get_server_route_handler(routes) {
+	async function handle_route(route, req, res, next) {
+		req.params = route.params(route.pattern.exec(req.path));
+
+		const method = req.method.toLowerCase();
+		// 'delete' cannot be exported from a module because it is a keyword,
+		// so check for 'del' instead
+		const method_export = method === 'delete' ? 'del' : method;
+		const handle_method = route.handlers[method_export];
+		if (handle_method) {
+			if (process.env.SAPPER_EXPORT) {
+				const { write, end, setHeader } = res;
+				const chunks = [];
+				const headers = {};
+
+				// intercept data so that it can be exported
+				res.write = function(chunk) {
+					chunks.push(Buffer.from(chunk));
+					write.apply(res, arguments);
+				};
+
+				res.setHeader = function(name, value) {
+					headers[name.toLowerCase()] = value;
+					setHeader.apply(res, arguments);
+				};
+
+				res.end = function(chunk) {
+					if (chunk) chunks.push(Buffer.from(chunk));
+					end.apply(res, arguments);
+
+					process.send({
+						__sapper__: true,
+						event: 'file',
+						url: req.url,
+						method: req.method,
+						status: res.statusCode,
+						type: headers['content-type'],
+						body: Buffer.concat(chunks).toString()
+					});
+				};
+			}
+
+			const handle_next = (err) => {
+				if (err) {
+					res.statusCode = 500;
+					res.end(err.message);
+				} else {
+					process.nextTick(next);
+				}
+			};
+
+			try {
+				await handle_method(req, res, handle_next);
+			} catch (err) {
+				console.error(err);
+				handle_next(err);
+			}
+		} else {
+			// no matching handler for method
+			process.nextTick(next);
+		}
+	}
+
+	return function find_route(req, res, next) {
+		for (const route of routes) {
+			if (route.pattern.test(req.path)) {
+				handle_route(route, req, res, next);
+				return;
+			}
+		}
+
+		next();
+	};
+}
+
+/*!
+ * cookie
+ * Copyright(c) 2012-2014 Roman Shtylman
+ * Copyright(c) 2015 Douglas Christopher Wilson
+ * MIT Licensed
+ */
+
+/**
+ * Module exports.
+ * @public
+ */
+
+var parse_1 = parse;
+var serialize_1 = serialize;
+
+/**
+ * Module variables.
+ * @private
+ */
+
+var decode = decodeURIComponent;
+var encode = encodeURIComponent;
+var pairSplitRegExp = /; */;
+
+/**
+ * RegExp to match field-content in RFC 7230 sec 3.2
+ *
+ * field-content = field-vchar [ 1*( SP / HTAB ) field-vchar ]
+ * field-vchar   = VCHAR / obs-text
+ * obs-text      = %x80-FF
+ */
+
+var fieldContentRegExp = /^[\u0009\u0020-\u007e\u0080-\u00ff]+$/;
+
+/**
+ * Parse a cookie header.
+ *
+ * Parse the given cookie header string into an object
+ * The object has the various cookies as keys(names) => values
+ *
+ * @param {string} str
+ * @param {object} [options]
+ * @return {object}
+ * @public
+ */
+
+function parse(str, options) {
+  if (typeof str !== 'string') {
+    throw new TypeError('argument str must be a string');
+  }
+
+  var obj = {};
+  var opt = options || {};
+  var pairs = str.split(pairSplitRegExp);
+  var dec = opt.decode || decode;
+
+  for (var i = 0; i < pairs.length; i++) {
+    var pair = pairs[i];
+    var eq_idx = pair.indexOf('=');
+
+    // skip things that don't look like key=value
+    if (eq_idx < 0) {
+      continue;
+    }
+
+    var key = pair.substr(0, eq_idx).trim();
+    var val = pair.substr(++eq_idx, pair.length).trim();
+
+    // quoted values
+    if ('"' == val[0]) {
+      val = val.slice(1, -1);
+    }
+
+    // only assign once
+    if (undefined == obj[key]) {
+      obj[key] = tryDecode(val, dec);
+    }
+  }
+
+  return obj;
+}
+
+/**
+ * Serialize data into a cookie header.
+ *
+ * Serialize the a name value pair into a cookie string suitable for
+ * http headers. An optional options object specified cookie parameters.
+ *
+ * serialize('foo', 'bar', { httpOnly: true })
+ *   => "foo=bar; httpOnly"
+ *
+ * @param {string} name
+ * @param {string} val
+ * @param {object} [options]
+ * @return {string}
+ * @public
+ */
+
+function serialize(name, val, options) {
+  var opt = options || {};
+  var enc = opt.encode || encode;
+
+  if (typeof enc !== 'function') {
+    throw new TypeError('option encode is invalid');
+  }
+
+  if (!fieldContentRegExp.test(name)) {
+    throw new TypeError('argument name is invalid');
+  }
+
+  var value = enc(val);
+
+  if (value && !fieldContentRegExp.test(value)) {
+    throw new TypeError('argument val is invalid');
+  }
+
+  var str = name + '=' + value;
+
+  if (null != opt.maxAge) {
+    var maxAge = opt.maxAge - 0;
+    if (isNaN(maxAge)) throw new Error('maxAge should be a Number');
+    str += '; Max-Age=' + Math.floor(maxAge);
+  }
+
+  if (opt.domain) {
+    if (!fieldContentRegExp.test(opt.domain)) {
+      throw new TypeError('option domain is invalid');
+    }
+
+    str += '; Domain=' + opt.domain;
+  }
+
+  if (opt.path) {
+    if (!fieldContentRegExp.test(opt.path)) {
+      throw new TypeError('option path is invalid');
+    }
+
+    str += '; Path=' + opt.path;
+  }
+
+  if (opt.expires) {
+    if (typeof opt.expires.toUTCString !== 'function') {
+      throw new TypeError('option expires is invalid');
+    }
+
+    str += '; Expires=' + opt.expires.toUTCString();
+  }
+
+  if (opt.httpOnly) {
+    str += '; HttpOnly';
+  }
+
+  if (opt.secure) {
+    str += '; Secure';
+  }
+
+  if (opt.sameSite) {
+    var sameSite = typeof opt.sameSite === 'string'
+      ? opt.sameSite.toLowerCase() : opt.sameSite;
+
+    switch (sameSite) {
+      case true:
+        str += '; SameSite=Strict';
+        break;
+      case 'lax':
+        str += '; SameSite=Lax';
+        break;
+      case 'strict':
+        str += '; SameSite=Strict';
+        break;
+      case 'none':
+        str += '; SameSite=None';
+        break;
+      default:
+        throw new TypeError('option sameSite is invalid');
+    }
+  }
+
+  return str;
+}
+
+/**
+ * Try decoding a string using a decoding function.
+ *
+ * @param {string} str
+ * @param {function} decode
+ * @private
+ */
+
+function tryDecode(str, decode) {
+  try {
+    return decode(str);
+  } catch (e) {
+    return str;
+  }
+}
+
+var cookie = {
+	parse: parse_1,
+	serialize: serialize_1
+};
+
+var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_$';
+var unsafeChars = /[<>\b\f\n\r\t\0\u2028\u2029]/g;
+var reserved = /^(?:do|if|in|for|int|let|new|try|var|byte|case|char|else|enum|goto|long|this|void|with|await|break|catch|class|const|final|float|short|super|throw|while|yield|delete|double|export|import|native|return|switch|throws|typeof|boolean|default|extends|finally|package|private|abstract|continue|debugger|function|volatile|interface|protected|transient|implements|instanceof|synchronized)$/;
+var escaped$1 = {
+    '<': '\\u003C',
+    '>': '\\u003E',
+    '/': '\\u002F',
+    '\\': '\\\\',
+    '\b': '\\b',
+    '\f': '\\f',
+    '\n': '\\n',
+    '\r': '\\r',
+    '\t': '\\t',
+    '\0': '\\0',
+    '\u2028': '\\u2028',
+    '\u2029': '\\u2029'
+};
+var objectProtoOwnPropertyNames = Object.getOwnPropertyNames(Object.prototype).sort().join('\0');
+function devalue(value) {
+    var counts = new Map();
+    function walk(thing) {
+        if (typeof thing === 'function') {
+            throw new Error("Cannot stringify a function");
+        }
+        if (counts.has(thing)) {
+            counts.set(thing, counts.get(thing) + 1);
+            return;
+        }
+        counts.set(thing, 1);
+        if (!isPrimitive(thing)) {
+            var type = getType(thing);
+            switch (type) {
+                case 'Number':
+                case 'String':
+                case 'Boolean':
+                case 'Date':
+                case 'RegExp':
+                    return;
+                case 'Array':
+                    thing.forEach(walk);
+                    break;
+                case 'Set':
+                case 'Map':
+                    Array.from(thing).forEach(walk);
+                    break;
+                default:
+                    var proto = Object.getPrototypeOf(thing);
+                    if (proto !== Object.prototype &&
+                        proto !== null &&
+                        Object.getOwnPropertyNames(proto).sort().join('\0') !== objectProtoOwnPropertyNames) {
+                        throw new Error("Cannot stringify arbitrary non-POJOs");
+                    }
+                    if (Object.getOwnPropertySymbols(thing).length > 0) {
+                        throw new Error("Cannot stringify POJOs with symbolic keys");
+                    }
+                    Object.keys(thing).forEach(function (key) { return walk(thing[key]); });
+            }
+        }
+    }
+    walk(value);
+    var names = new Map();
+    Array.from(counts)
+        .filter(function (entry) { return entry[1] > 1; })
+        .sort(function (a, b) { return b[1] - a[1]; })
+        .forEach(function (entry, i) {
+        names.set(entry[0], getName(i));
+    });
+    function stringify(thing) {
+        if (names.has(thing)) {
+            return names.get(thing);
+        }
+        if (isPrimitive(thing)) {
+            return stringifyPrimitive(thing);
+        }
+        var type = getType(thing);
+        switch (type) {
+            case 'Number':
+            case 'String':
+            case 'Boolean':
+                return "Object(" + stringify(thing.valueOf()) + ")";
+            case 'RegExp':
+                return thing.toString();
+            case 'Date':
+                return "new Date(" + thing.getTime() + ")";
+            case 'Array':
+                var members = thing.map(function (v, i) { return i in thing ? stringify(v) : ''; });
+                var tail = thing.length === 0 || (thing.length - 1 in thing) ? '' : ',';
+                return "[" + members.join(',') + tail + "]";
+            case 'Set':
+            case 'Map':
+                return "new " + type + "([" + Array.from(thing).map(stringify).join(',') + "])";
+            default:
+                var obj = "{" + Object.keys(thing).map(function (key) { return safeKey(key) + ":" + stringify(thing[key]); }).join(',') + "}";
+                var proto = Object.getPrototypeOf(thing);
+                if (proto === null) {
+                    return Object.keys(thing).length > 0
+                        ? "Object.assign(Object.create(null)," + obj + ")"
+                        : "Object.create(null)";
+                }
+                return obj;
+        }
+    }
+    var str = stringify(value);
+    if (names.size) {
+        var params_1 = [];
+        var statements_1 = [];
+        var values_1 = [];
+        names.forEach(function (name, thing) {
+            params_1.push(name);
+            if (isPrimitive(thing)) {
+                values_1.push(stringifyPrimitive(thing));
+                return;
+            }
+            var type = getType(thing);
+            switch (type) {
+                case 'Number':
+                case 'String':
+                case 'Boolean':
+                    values_1.push("Object(" + stringify(thing.valueOf()) + ")");
+                    break;
+                case 'RegExp':
+                    values_1.push(thing.toString());
+                    break;
+                case 'Date':
+                    values_1.push("new Date(" + thing.getTime() + ")");
+                    break;
+                case 'Array':
+                    values_1.push("Array(" + thing.length + ")");
+                    thing.forEach(function (v, i) {
+                        statements_1.push(name + "[" + i + "]=" + stringify(v));
+                    });
+                    break;
+                case 'Set':
+                    values_1.push("new Set");
+                    statements_1.push(name + "." + Array.from(thing).map(function (v) { return "add(" + stringify(v) + ")"; }).join('.'));
+                    break;
+                case 'Map':
+                    values_1.push("new Map");
+                    statements_1.push(name + "." + Array.from(thing).map(function (_a) {
+                        var k = _a[0], v = _a[1];
+                        return "set(" + stringify(k) + ", " + stringify(v) + ")";
+                    }).join('.'));
+                    break;
+                default:
+                    values_1.push(Object.getPrototypeOf(thing) === null ? 'Object.create(null)' : '{}');
+                    Object.keys(thing).forEach(function (key) {
+                        statements_1.push("" + name + safeProp(key) + "=" + stringify(thing[key]));
+                    });
+            }
+        });
+        statements_1.push("return " + str);
+        return "(function(" + params_1.join(',') + "){" + statements_1.join(';') + "}(" + values_1.join(',') + "))";
+    }
+    else {
+        return str;
+    }
+}
+function getName(num) {
+    var name = '';
+    do {
+        name = chars[num % chars.length] + name;
+        num = ~~(num / chars.length) - 1;
+    } while (num >= 0);
+    return reserved.test(name) ? name + "_" : name;
+}
+function isPrimitive(thing) {
+    return Object(thing) !== thing;
+}
+function stringifyPrimitive(thing) {
+    if (typeof thing === 'string')
+        return stringifyString(thing);
+    if (thing === void 0)
+        return 'void 0';
+    if (thing === 0 && 1 / thing < 0)
+        return '-0';
+    var str = String(thing);
+    if (typeof thing === 'number')
+        return str.replace(/^(-)?0\./, '$1.');
+    return str;
+}
+function getType(thing) {
+    return Object.prototype.toString.call(thing).slice(8, -1);
+}
+function escapeUnsafeChar(c) {
+    return escaped$1[c] || c;
+}
+function escapeUnsafeChars(str) {
+    return str.replace(unsafeChars, escapeUnsafeChar);
+}
+function safeKey(key) {
+    return /^[_$a-zA-Z][_$a-zA-Z0-9]*$/.test(key) ? key : escapeUnsafeChars(JSON.stringify(key));
+}
+function safeProp(key) {
+    return /^[_$a-zA-Z][_$a-zA-Z0-9]*$/.test(key) ? "." + key : "[" + escapeUnsafeChars(JSON.stringify(key)) + "]";
+}
+function stringifyString(str) {
+    var result = '"';
+    for (var i = 0; i < str.length; i += 1) {
+        var char = str.charAt(i);
+        var code = char.charCodeAt(0);
+        if (char === '"') {
+            result += '\\"';
+        }
+        else if (char in escaped$1) {
+            result += escaped$1[char];
+        }
+        else if (code >= 0xd800 && code <= 0xdfff) {
+            var next = str.charCodeAt(i + 1);
+            // If this is the beginning of a [high, low] surrogate pair,
+            // add the next two characters, otherwise escape
+            if (code <= 0xdbff && (next >= 0xdc00 && next <= 0xdfff)) {
+                result += char + str[++i];
+            }
+            else {
+                result += "\\u" + code.toString(16).toUpperCase();
+            }
+        }
+        else {
+            result += char;
+        }
+    }
+    result += '"';
+    return result;
+}
+
+// Based on https://github.com/tmpvar/jsdom/blob/aa85b2abf07766ff7bf5c1f6daafb3726f2f2db5/lib/jsdom/living/blob.js
+
+// fix for "Readable" isn't a named export issue
+const Readable = Stream.Readable;
+
+const BUFFER = Symbol('buffer');
+const TYPE = Symbol('type');
+
+class Blob {
+	constructor() {
+		this[TYPE] = '';
+
+		const blobParts = arguments[0];
+		const options = arguments[1];
+
+		const buffers = [];
+		let size = 0;
+
+		if (blobParts) {
+			const a = blobParts;
+			const length = Number(a.length);
+			for (let i = 0; i < length; i++) {
+				const element = a[i];
+				let buffer;
+				if (element instanceof Buffer) {
+					buffer = element;
+				} else if (ArrayBuffer.isView(element)) {
+					buffer = Buffer.from(element.buffer, element.byteOffset, element.byteLength);
+				} else if (element instanceof ArrayBuffer) {
+					buffer = Buffer.from(element);
+				} else if (element instanceof Blob) {
+					buffer = element[BUFFER];
+				} else {
+					buffer = Buffer.from(typeof element === 'string' ? element : String(element));
+				}
+				size += buffer.length;
+				buffers.push(buffer);
+			}
+		}
+
+		this[BUFFER] = Buffer.concat(buffers);
+
+		let type = options && options.type !== undefined && String(options.type).toLowerCase();
+		if (type && !/[^\u0020-\u007E]/.test(type)) {
+			this[TYPE] = type;
+		}
+	}
+	get size() {
+		return this[BUFFER].length;
+	}
+	get type() {
+		return this[TYPE];
+	}
+	text() {
+		return Promise.resolve(this[BUFFER].toString());
+	}
+	arrayBuffer() {
+		const buf = this[BUFFER];
+		const ab = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+		return Promise.resolve(ab);
+	}
+	stream() {
+		const readable = new Readable();
+		readable._read = function () {};
+		readable.push(this[BUFFER]);
+		readable.push(null);
+		return readable;
+	}
+	toString() {
+		return '[object Blob]';
+	}
+	slice() {
+		const size = this.size;
+
+		const start = arguments[0];
+		const end = arguments[1];
+		let relativeStart, relativeEnd;
+		if (start === undefined) {
+			relativeStart = 0;
+		} else if (start < 0) {
+			relativeStart = Math.max(size + start, 0);
+		} else {
+			relativeStart = Math.min(start, size);
+		}
+		if (end === undefined) {
+			relativeEnd = size;
+		} else if (end < 0) {
+			relativeEnd = Math.max(size + end, 0);
+		} else {
+			relativeEnd = Math.min(end, size);
+		}
+		const span = Math.max(relativeEnd - relativeStart, 0);
+
+		const buffer = this[BUFFER];
+		const slicedBuffer = buffer.slice(relativeStart, relativeStart + span);
+		const blob = new Blob([], { type: arguments[2] });
+		blob[BUFFER] = slicedBuffer;
+		return blob;
+	}
+}
+
+Object.defineProperties(Blob.prototype, {
+	size: { enumerable: true },
+	type: { enumerable: true },
+	slice: { enumerable: true }
+});
+
+Object.defineProperty(Blob.prototype, Symbol.toStringTag, {
+	value: 'Blob',
+	writable: false,
+	enumerable: false,
+	configurable: true
+});
+
+/**
+ * fetch-error.js
+ *
+ * FetchError interface for operational errors
+ */
+
+/**
+ * Create FetchError instance
+ *
+ * @param   String      message      Error message for human
+ * @param   String      type         Error type for machine
+ * @param   String      systemError  For Node.js system error
+ * @return  FetchError
+ */
+function FetchError(message, type, systemError) {
+  Error.call(this, message);
+
+  this.message = message;
+  this.type = type;
+
+  // when err.type is `system`, err.code contains system error code
+  if (systemError) {
+    this.code = this.errno = systemError.code;
+  }
+
+  // hide custom error implementation details from end-users
+  Error.captureStackTrace(this, this.constructor);
+}
+
+FetchError.prototype = Object.create(Error.prototype);
+FetchError.prototype.constructor = FetchError;
+FetchError.prototype.name = 'FetchError';
+
+let convert;
+try {
+	convert = require('encoding').convert;
+} catch (e) {}
+
+const INTERNALS = Symbol('Body internals');
+
+// fix an issue where "PassThrough" isn't a named export for node <10
+const PassThrough = Stream.PassThrough;
+
+/**
+ * Body mixin
+ *
+ * Ref: https://fetch.spec.whatwg.org/#body
+ *
+ * @param   Stream  body  Readable stream
+ * @param   Object  opts  Response options
+ * @return  Void
+ */
+function Body(body) {
+	var _this = this;
+
+	var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+	    _ref$size = _ref.size;
+
+	let size = _ref$size === undefined ? 0 : _ref$size;
+	var _ref$timeout = _ref.timeout;
+	let timeout = _ref$timeout === undefined ? 0 : _ref$timeout;
+
+	if (body == null) {
+		// body is undefined or null
+		body = null;
+	} else if (isURLSearchParams(body)) {
+		// body is a URLSearchParams
+		body = Buffer.from(body.toString());
+	} else if (isBlob(body)) ; else if (Buffer.isBuffer(body)) ; else if (Object.prototype.toString.call(body) === '[object ArrayBuffer]') {
+		// body is ArrayBuffer
+		body = Buffer.from(body);
+	} else if (ArrayBuffer.isView(body)) {
+		// body is ArrayBufferView
+		body = Buffer.from(body.buffer, body.byteOffset, body.byteLength);
+	} else if (body instanceof Stream) ; else {
+		// none of the above
+		// coerce to string then buffer
+		body = Buffer.from(String(body));
+	}
+	this[INTERNALS] = {
+		body,
+		disturbed: false,
+		error: null
+	};
+	this.size = size;
+	this.timeout = timeout;
+
+	if (body instanceof Stream) {
+		body.on('error', function (err) {
+			const error = err.name === 'AbortError' ? err : new FetchError(`Invalid response body while trying to fetch ${_this.url}: ${err.message}`, 'system', err);
+			_this[INTERNALS].error = error;
+		});
+	}
+}
+
+Body.prototype = {
+	get body() {
+		return this[INTERNALS].body;
+	},
+
+	get bodyUsed() {
+		return this[INTERNALS].disturbed;
+	},
+
+	/**
+  * Decode response as ArrayBuffer
+  *
+  * @return  Promise
+  */
+	arrayBuffer() {
+		return consumeBody.call(this).then(function (buf) {
+			return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+		});
+	},
+
+	/**
+  * Return raw response as Blob
+  *
+  * @return Promise
+  */
+	blob() {
+		let ct = this.headers && this.headers.get('content-type') || '';
+		return consumeBody.call(this).then(function (buf) {
+			return Object.assign(
+			// Prevent copying
+			new Blob([], {
+				type: ct.toLowerCase()
+			}), {
+				[BUFFER]: buf
+			});
+		});
+	},
+
+	/**
+  * Decode response as json
+  *
+  * @return  Promise
+  */
+	json() {
+		var _this2 = this;
+
+		return consumeBody.call(this).then(function (buffer) {
+			try {
+				return JSON.parse(buffer.toString());
+			} catch (err) {
+				return Body.Promise.reject(new FetchError(`invalid json response body at ${_this2.url} reason: ${err.message}`, 'invalid-json'));
+			}
+		});
+	},
+
+	/**
+  * Decode response as text
+  *
+  * @return  Promise
+  */
+	text() {
+		return consumeBody.call(this).then(function (buffer) {
+			return buffer.toString();
+		});
+	},
+
+	/**
+  * Decode response as buffer (non-spec api)
+  *
+  * @return  Promise
+  */
+	buffer() {
+		return consumeBody.call(this);
+	},
+
+	/**
+  * Decode response as text, while automatically detecting the encoding and
+  * trying to decode to UTF-8 (non-spec api)
+  *
+  * @return  Promise
+  */
+	textConverted() {
+		var _this3 = this;
+
+		return consumeBody.call(this).then(function (buffer) {
+			return convertBody(buffer, _this3.headers);
+		});
+	}
+};
+
+// In browsers, all properties are enumerable.
+Object.defineProperties(Body.prototype, {
+	body: { enumerable: true },
+	bodyUsed: { enumerable: true },
+	arrayBuffer: { enumerable: true },
+	blob: { enumerable: true },
+	json: { enumerable: true },
+	text: { enumerable: true }
+});
+
+Body.mixIn = function (proto) {
+	for (const name of Object.getOwnPropertyNames(Body.prototype)) {
+		// istanbul ignore else: future proof
+		if (!(name in proto)) {
+			const desc = Object.getOwnPropertyDescriptor(Body.prototype, name);
+			Object.defineProperty(proto, name, desc);
+		}
+	}
+};
+
+/**
+ * Consume and convert an entire Body to a Buffer.
+ *
+ * Ref: https://fetch.spec.whatwg.org/#concept-body-consume-body
+ *
+ * @return  Promise
+ */
+function consumeBody() {
+	var _this4 = this;
+
+	if (this[INTERNALS].disturbed) {
+		return Body.Promise.reject(new TypeError(`body used already for: ${this.url}`));
+	}
+
+	this[INTERNALS].disturbed = true;
+
+	if (this[INTERNALS].error) {
+		return Body.Promise.reject(this[INTERNALS].error);
+	}
+
+	let body = this.body;
+
+	// body is null
+	if (body === null) {
+		return Body.Promise.resolve(Buffer.alloc(0));
+	}
+
+	// body is blob
+	if (isBlob(body)) {
+		body = body.stream();
+	}
+
+	// body is buffer
+	if (Buffer.isBuffer(body)) {
+		return Body.Promise.resolve(body);
+	}
+
+	// istanbul ignore if: should never happen
+	if (!(body instanceof Stream)) {
+		return Body.Promise.resolve(Buffer.alloc(0));
+	}
+
+	// body is stream
+	// get ready to actually consume the body
+	let accum = [];
+	let accumBytes = 0;
+	let abort = false;
+
+	return new Body.Promise(function (resolve, reject) {
+		let resTimeout;
+
+		// allow timeout on slow response body
+		if (_this4.timeout) {
+			resTimeout = setTimeout(function () {
+				abort = true;
+				reject(new FetchError(`Response timeout while trying to fetch ${_this4.url} (over ${_this4.timeout}ms)`, 'body-timeout'));
+			}, _this4.timeout);
+		}
+
+		// handle stream errors
+		body.on('error', function (err) {
+			if (err.name === 'AbortError') {
+				// if the request was aborted, reject with this Error
+				abort = true;
+				reject(err);
+			} else {
+				// other errors, such as incorrect content-encoding
+				reject(new FetchError(`Invalid response body while trying to fetch ${_this4.url}: ${err.message}`, 'system', err));
+			}
+		});
+
+		body.on('data', function (chunk) {
+			if (abort || chunk === null) {
+				return;
+			}
+
+			if (_this4.size && accumBytes + chunk.length > _this4.size) {
+				abort = true;
+				reject(new FetchError(`content size at ${_this4.url} over limit: ${_this4.size}`, 'max-size'));
+				return;
+			}
+
+			accumBytes += chunk.length;
+			accum.push(chunk);
+		});
+
+		body.on('end', function () {
+			if (abort) {
+				return;
+			}
+
+			clearTimeout(resTimeout);
+
+			try {
+				resolve(Buffer.concat(accum, accumBytes));
+			} catch (err) {
+				// handle streams that have accumulated too much data (issue #414)
+				reject(new FetchError(`Could not create Buffer from response body for ${_this4.url}: ${err.message}`, 'system', err));
+			}
+		});
+	});
+}
+
+/**
+ * Detect buffer encoding and convert to target encoding
+ * ref: http://www.w3.org/TR/2011/WD-html5-20110113/parsing.html#determining-the-character-encoding
+ *
+ * @param   Buffer  buffer    Incoming buffer
+ * @param   String  encoding  Target encoding
+ * @return  String
+ */
+function convertBody(buffer, headers) {
+	if (typeof convert !== 'function') {
+		throw new Error('The package `encoding` must be installed to use the textConverted() function');
+	}
+
+	const ct = headers.get('content-type');
+	let charset = 'utf-8';
+	let res, str;
+
+	// header
+	if (ct) {
+		res = /charset=([^;]*)/i.exec(ct);
+	}
+
+	// no charset in content type, peek at response body for at most 1024 bytes
+	str = buffer.slice(0, 1024).toString();
+
+	// html5
+	if (!res && str) {
+		res = /<meta.+?charset=(['"])(.+?)\1/i.exec(str);
+	}
+
+	// html4
+	if (!res && str) {
+		res = /<meta[\s]+?http-equiv=(['"])content-type\1[\s]+?content=(['"])(.+?)\2/i.exec(str);
+
+		if (res) {
+			res = /charset=(.*)/i.exec(res.pop());
+		}
+	}
+
+	// xml
+	if (!res && str) {
+		res = /<\?xml.+?encoding=(['"])(.+?)\1/i.exec(str);
+	}
+
+	// found charset
+	if (res) {
+		charset = res.pop();
+
+		// prevent decode issues when sites use incorrect encoding
+		// ref: https://hsivonen.fi/encoding-menu/
+		if (charset === 'gb2312' || charset === 'gbk') {
+			charset = 'gb18030';
+		}
+	}
+
+	// turn raw buffers into a single utf-8 buffer
+	return convert(buffer, 'UTF-8', charset).toString();
+}
+
+/**
+ * Detect a URLSearchParams object
+ * ref: https://github.com/bitinn/node-fetch/issues/296#issuecomment-307598143
+ *
+ * @param   Object  obj     Object to detect by type or brand
+ * @return  String
+ */
+function isURLSearchParams(obj) {
+	// Duck-typing as a necessary condition.
+	if (typeof obj !== 'object' || typeof obj.append !== 'function' || typeof obj.delete !== 'function' || typeof obj.get !== 'function' || typeof obj.getAll !== 'function' || typeof obj.has !== 'function' || typeof obj.set !== 'function') {
+		return false;
+	}
+
+	// Brand-checking and more duck-typing as optional condition.
+	return obj.constructor.name === 'URLSearchParams' || Object.prototype.toString.call(obj) === '[object URLSearchParams]' || typeof obj.sort === 'function';
+}
+
+/**
+ * Check if `obj` is a W3C `Blob` object (which `File` inherits from)
+ * @param  {*} obj
+ * @return {boolean}
+ */
+function isBlob(obj) {
+	return typeof obj === 'object' && typeof obj.arrayBuffer === 'function' && typeof obj.type === 'string' && typeof obj.stream === 'function' && typeof obj.constructor === 'function' && typeof obj.constructor.name === 'string' && /^(Blob|File)$/.test(obj.constructor.name) && /^(Blob|File)$/.test(obj[Symbol.toStringTag]);
+}
+
+/**
+ * Clone body given Res/Req instance
+ *
+ * @param   Mixed  instance  Response or Request instance
+ * @return  Mixed
+ */
+function clone(instance) {
+	let p1, p2;
+	let body = instance.body;
+
+	// don't allow cloning a used body
+	if (instance.bodyUsed) {
+		throw new Error('cannot clone body after it is used');
+	}
+
+	// check that body is a stream and not form-data object
+	// note: we can't clone the form-data object without having it as a dependency
+	if (body instanceof Stream && typeof body.getBoundary !== 'function') {
+		// tee instance body
+		p1 = new PassThrough();
+		p2 = new PassThrough();
+		body.pipe(p1);
+		body.pipe(p2);
+		// set instance body to teed body and return the other teed body
+		instance[INTERNALS].body = p1;
+		body = p2;
+	}
+
+	return body;
+}
+
+/**
+ * Performs the operation "extract a `Content-Type` value from |object|" as
+ * specified in the specification:
+ * https://fetch.spec.whatwg.org/#concept-bodyinit-extract
+ *
+ * This function assumes that instance.body is present.
+ *
+ * @param   Mixed  instance  Any options.body input
+ */
+function extractContentType(body) {
+	if (body === null) {
+		// body is null
+		return null;
+	} else if (typeof body === 'string') {
+		// body is string
+		return 'text/plain;charset=UTF-8';
+	} else if (isURLSearchParams(body)) {
+		// body is a URLSearchParams
+		return 'application/x-www-form-urlencoded;charset=UTF-8';
+	} else if (isBlob(body)) {
+		// body is blob
+		return body.type || null;
+	} else if (Buffer.isBuffer(body)) {
+		// body is buffer
+		return null;
+	} else if (Object.prototype.toString.call(body) === '[object ArrayBuffer]') {
+		// body is ArrayBuffer
+		return null;
+	} else if (ArrayBuffer.isView(body)) {
+		// body is ArrayBufferView
+		return null;
+	} else if (typeof body.getBoundary === 'function') {
+		// detect form data input from form-data module
+		return `multipart/form-data;boundary=${body.getBoundary()}`;
+	} else if (body instanceof Stream) {
+		// body is stream
+		// can't really do much about this
+		return null;
+	} else {
+		// Body constructor defaults other things to string
+		return 'text/plain;charset=UTF-8';
+	}
+}
+
+/**
+ * The Fetch Standard treats this as if "total bytes" is a property on the body.
+ * For us, we have to explicitly get it with a function.
+ *
+ * ref: https://fetch.spec.whatwg.org/#concept-body-total-bytes
+ *
+ * @param   Body    instance   Instance of Body
+ * @return  Number?            Number of bytes, or null if not possible
+ */
+function getTotalBytes(instance) {
+	const body = instance.body;
+
+
+	if (body === null) {
+		// body is null
+		return 0;
+	} else if (isBlob(body)) {
+		return body.size;
+	} else if (Buffer.isBuffer(body)) {
+		// body is buffer
+		return body.length;
+	} else if (body && typeof body.getLengthSync === 'function') {
+		// detect form data input from form-data module
+		if (body._lengthRetrievers && body._lengthRetrievers.length == 0 || // 1.x
+		body.hasKnownLength && body.hasKnownLength()) {
+			// 2.x
+			return body.getLengthSync();
+		}
+		return null;
+	} else {
+		// body is stream
+		return null;
+	}
+}
+
+/**
+ * Write a Body to a Node.js WritableStream (e.g. http.Request) object.
+ *
+ * @param   Body    instance   Instance of Body
+ * @return  Void
+ */
+function writeToStream(dest, instance) {
+	const body = instance.body;
+
+
+	if (body === null) {
+		// body is null
+		dest.end();
+	} else if (isBlob(body)) {
+		body.stream().pipe(dest);
+	} else if (Buffer.isBuffer(body)) {
+		// body is buffer
+		dest.write(body);
+		dest.end();
+	} else {
+		// body is stream
+		body.pipe(dest);
+	}
+}
+
+// expose Promise
+Body.Promise = global.Promise;
+
+/**
+ * headers.js
+ *
+ * Headers class offers convenient helpers
+ */
+
+const invalidTokenRegex = /[^\^_`a-zA-Z\-0-9!#$%&'*+.|~]/;
+const invalidHeaderCharRegex = /[^\t\x20-\x7e\x80-\xff]/;
+
+function validateName(name) {
+	name = `${name}`;
+	if (invalidTokenRegex.test(name) || name === '') {
+		throw new TypeError(`${name} is not a legal HTTP header name`);
+	}
+}
+
+function validateValue(value) {
+	value = `${value}`;
+	if (invalidHeaderCharRegex.test(value)) {
+		throw new TypeError(`${value} is not a legal HTTP header value`);
+	}
+}
+
+/**
+ * Find the key in the map object given a header name.
+ *
+ * Returns undefined if not found.
+ *
+ * @param   String  name  Header name
+ * @return  String|Undefined
+ */
+function find(map, name) {
+	name = name.toLowerCase();
+	for (const key in map) {
+		if (key.toLowerCase() === name) {
+			return key;
+		}
+	}
+	return undefined;
+}
+
+const MAP = Symbol('map');
+class Headers {
+	/**
+  * Headers class
+  *
+  * @param   Object  headers  Response headers
+  * @return  Void
+  */
+	constructor() {
+		let init = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
+
+		this[MAP] = Object.create(null);
+
+		if (init instanceof Headers) {
+			const rawHeaders = init.raw();
+			const headerNames = Object.keys(rawHeaders);
+
+			for (const headerName of headerNames) {
+				for (const value of rawHeaders[headerName]) {
+					this.append(headerName, value);
+				}
+			}
+
+			return;
+		}
+
+		// We don't worry about converting prop to ByteString here as append()
+		// will handle it.
+		if (init == null) ; else if (typeof init === 'object') {
+			const method = init[Symbol.iterator];
+			if (method != null) {
+				if (typeof method !== 'function') {
+					throw new TypeError('Header pairs must be iterable');
+				}
+
+				// sequence<sequence<ByteString>>
+				// Note: per spec we have to first exhaust the lists then process them
+				const pairs = [];
+				for (const pair of init) {
+					if (typeof pair !== 'object' || typeof pair[Symbol.iterator] !== 'function') {
+						throw new TypeError('Each header pair must be iterable');
+					}
+					pairs.push(Array.from(pair));
+				}
+
+				for (const pair of pairs) {
+					if (pair.length !== 2) {
+						throw new TypeError('Each header pair must be a name/value tuple');
+					}
+					this.append(pair[0], pair[1]);
+				}
+			} else {
+				// record<ByteString, ByteString>
+				for (const key of Object.keys(init)) {
+					const value = init[key];
+					this.append(key, value);
+				}
+			}
+		} else {
+			throw new TypeError('Provided initializer must be an object');
+		}
+	}
+
+	/**
+  * Return combined header value given name
+  *
+  * @param   String  name  Header name
+  * @return  Mixed
+  */
+	get(name) {
+		name = `${name}`;
+		validateName(name);
+		const key = find(this[MAP], name);
+		if (key === undefined) {
+			return null;
+		}
+
+		return this[MAP][key].join(', ');
+	}
+
+	/**
+  * Iterate over all headers
+  *
+  * @param   Function  callback  Executed for each item with parameters (value, name, thisArg)
+  * @param   Boolean   thisArg   `this` context for callback function
+  * @return  Void
+  */
+	forEach(callback) {
+		let thisArg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
+
+		let pairs = getHeaders(this);
+		let i = 0;
+		while (i < pairs.length) {
+			var _pairs$i = pairs[i];
+			const name = _pairs$i[0],
+			      value = _pairs$i[1];
+
+			callback.call(thisArg, value, name, this);
+			pairs = getHeaders(this);
+			i++;
+		}
+	}
+
+	/**
+  * Overwrite header values given name
+  *
+  * @param   String  name   Header name
+  * @param   String  value  Header value
+  * @return  Void
+  */
+	set(name, value) {
+		name = `${name}`;
+		value = `${value}`;
+		validateName(name);
+		validateValue(value);
+		const key = find(this[MAP], name);
+		this[MAP][key !== undefined ? key : name] = [value];
+	}
+
+	/**
+  * Append a value onto existing header
+  *
+  * @param   String  name   Header name
+  * @param   String  value  Header value
+  * @return  Void
+  */
+	append(name, value) {
+		name = `${name}`;
+		value = `${value}`;
+		validateName(name);
+		validateValue(value);
+		const key = find(this[MAP], name);
+		if (key !== undefined) {
+			this[MAP][key].push(value);
+		} else {
+			this[MAP][name] = [value];
+		}
+	}
+
+	/**
+  * Check for header name existence
+  *
+  * @param   String   name  Header name
+  * @return  Boolean
+  */
+	has(name) {
+		name = `${name}`;
+		validateName(name);
+		return find(this[MAP], name) !== undefined;
+	}
+
+	/**
+  * Delete all header values given name
+  *
+  * @param   String  name  Header name
+  * @return  Void
+  */
+	delete(name) {
+		name = `${name}`;
+		validateName(name);
+		const key = find(this[MAP], name);
+		if (key !== undefined) {
+			delete this[MAP][key];
+		}
+	}
+
+	/**
+  * Return raw headers (non-spec api)
+  *
+  * @return  Object
+  */
+	raw() {
+		return this[MAP];
+	}
+
+	/**
+  * Get an iterator on keys.
+  *
+  * @return  Iterator
+  */
+	keys() {
+		return createHeadersIterator(this, 'key');
+	}
+
+	/**
+  * Get an iterator on values.
+  *
+  * @return  Iterator
+  */
+	values() {
+		return createHeadersIterator(this, 'value');
+	}
+
+	/**
+  * Get an iterator on entries.
+  *
+  * This is the default iterator of the Headers object.
+  *
+  * @return  Iterator
+  */
+	[Symbol.iterator]() {
+		return createHeadersIterator(this, 'key+value');
+	}
+}
+Headers.prototype.entries = Headers.prototype[Symbol.iterator];
+
+Object.defineProperty(Headers.prototype, Symbol.toStringTag, {
+	value: 'Headers',
+	writable: false,
+	enumerable: false,
+	configurable: true
+});
+
+Object.defineProperties(Headers.prototype, {
+	get: { enumerable: true },
+	forEach: { enumerable: true },
+	set: { enumerable: true },
+	append: { enumerable: true },
+	has: { enumerable: true },
+	delete: { enumerable: true },
+	keys: { enumerable: true },
+	values: { enumerable: true },
+	entries: { enumerable: true }
+});
+
+function getHeaders(headers) {
+	let kind = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'key+value';
+
+	const keys = Object.keys(headers[MAP]).sort();
+	return keys.map(kind === 'key' ? function (k) {
+		return k.toLowerCase();
+	} : kind === 'value' ? function (k) {
+		return headers[MAP][k].join(', ');
+	} : function (k) {
+		return [k.toLowerCase(), headers[MAP][k].join(', ')];
+	});
+}
+
+const INTERNAL = Symbol('internal');
+
+function createHeadersIterator(target, kind) {
+	const iterator = Object.create(HeadersIteratorPrototype);
+	iterator[INTERNAL] = {
+		target,
+		kind,
+		index: 0
+	};
+	return iterator;
+}
+
+const HeadersIteratorPrototype = Object.setPrototypeOf({
+	next() {
+		// istanbul ignore if
+		if (!this || Object.getPrototypeOf(this) !== HeadersIteratorPrototype) {
+			throw new TypeError('Value of `this` is not a HeadersIterator');
+		}
+
+		var _INTERNAL = this[INTERNAL];
+		const target = _INTERNAL.target,
+		      kind = _INTERNAL.kind,
+		      index = _INTERNAL.index;
+
+		const values = getHeaders(target, kind);
+		const len = values.length;
+		if (index >= len) {
+			return {
+				value: undefined,
+				done: true
+			};
+		}
+
+		this[INTERNAL].index = index + 1;
+
+		return {
+			value: values[index],
+			done: false
+		};
+	}
+}, Object.getPrototypeOf(Object.getPrototypeOf([][Symbol.iterator]())));
+
+Object.defineProperty(HeadersIteratorPrototype, Symbol.toStringTag, {
+	value: 'HeadersIterator',
+	writable: false,
+	enumerable: false,
+	configurable: true
+});
+
+/**
+ * Export the Headers object in a form that Node.js can consume.
+ *
+ * @param   Headers  headers
+ * @return  Object
+ */
+function exportNodeCompatibleHeaders(headers) {
+	const obj = Object.assign({ __proto__: null }, headers[MAP]);
+
+	// http.request() only supports string as Host header. This hack makes
+	// specifying custom Host header possible.
+	const hostHeaderKey = find(headers[MAP], 'Host');
+	if (hostHeaderKey !== undefined) {
+		obj[hostHeaderKey] = obj[hostHeaderKey][0];
+	}
+
+	return obj;
+}
+
+/**
+ * Create a Headers object from an object of headers, ignoring those that do
+ * not conform to HTTP grammar productions.
+ *
+ * @param   Object  obj  Object of headers
+ * @return  Headers
+ */
+function createHeadersLenient(obj) {
+	const headers = new Headers();
+	for (const name of Object.keys(obj)) {
+		if (invalidTokenRegex.test(name)) {
+			continue;
+		}
+		if (Array.isArray(obj[name])) {
+			for (const val of obj[name]) {
+				if (invalidHeaderCharRegex.test(val)) {
+					continue;
+				}
+				if (headers[MAP][name] === undefined) {
+					headers[MAP][name] = [val];
+				} else {
+					headers[MAP][name].push(val);
+				}
+			}
+		} else if (!invalidHeaderCharRegex.test(obj[name])) {
+			headers[MAP][name] = [obj[name]];
+		}
+	}
+	return headers;
+}
+
+const INTERNALS$1 = Symbol('Response internals');
+
+// fix an issue where "STATUS_CODES" aren't a named export for node <10
+const STATUS_CODES = http.STATUS_CODES;
+
+/**
+ * Response class
+ *
+ * @param   Stream  body  Readable stream
+ * @param   Object  opts  Response options
+ * @return  Void
+ */
+class Response {
+	constructor() {
+		let body = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+		let opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+		Body.call(this, body, opts);
+
+		const status = opts.status || 200;
+		const headers = new Headers(opts.headers);
+
+		if (body != null && !headers.has('Content-Type')) {
+			const contentType = extractContentType(body);
+			if (contentType) {
+				headers.append('Content-Type', contentType);
+			}
+		}
+
+		this[INTERNALS$1] = {
+			url: opts.url,
+			status,
+			statusText: opts.statusText || STATUS_CODES[status],
+			headers,
+			counter: opts.counter
+		};
+	}
+
+	get url() {
+		return this[INTERNALS$1].url || '';
+	}
+
+	get status() {
+		return this[INTERNALS$1].status;
+	}
+
+	/**
+  * Convenience property representing if the request ended normally
+  */
+	get ok() {
+		return this[INTERNALS$1].status >= 200 && this[INTERNALS$1].status < 300;
+	}
+
+	get redirected() {
+		return this[INTERNALS$1].counter > 0;
+	}
+
+	get statusText() {
+		return this[INTERNALS$1].statusText;
+	}
+
+	get headers() {
+		return this[INTERNALS$1].headers;
+	}
+
+	/**
+  * Clone this response
+  *
+  * @return  Response
+  */
+	clone() {
+		return new Response(clone(this), {
+			url: this.url,
+			status: this.status,
+			statusText: this.statusText,
+			headers: this.headers,
+			ok: this.ok,
+			redirected: this.redirected
+		});
+	}
+}
+
+Body.mixIn(Response.prototype);
+
+Object.defineProperties(Response.prototype, {
+	url: { enumerable: true },
+	status: { enumerable: true },
+	ok: { enumerable: true },
+	redirected: { enumerable: true },
+	statusText: { enumerable: true },
+	headers: { enumerable: true },
+	clone: { enumerable: true }
+});
+
+Object.defineProperty(Response.prototype, Symbol.toStringTag, {
+	value: 'Response',
+	writable: false,
+	enumerable: false,
+	configurable: true
+});
+
+const INTERNALS$2 = Symbol('Request internals');
+
+// fix an issue where "format", "parse" aren't a named export for node <10
+const parse_url = Url.parse;
+const format_url = Url.format;
+
+const streamDestructionSupported = 'destroy' in Stream.Readable.prototype;
+
+/**
+ * Check if a value is an instance of Request.
+ *
+ * @param   Mixed   input
+ * @return  Boolean
+ */
+function isRequest(input) {
+	return typeof input === 'object' && typeof input[INTERNALS$2] === 'object';
+}
+
+function isAbortSignal(signal) {
+	const proto = signal && typeof signal === 'object' && Object.getPrototypeOf(signal);
+	return !!(proto && proto.constructor.name === 'AbortSignal');
+}
+
+/**
+ * Request class
+ *
+ * @param   Mixed   input  Url or Request instance
+ * @param   Object  init   Custom options
+ * @return  Void
+ */
+class Request {
+	constructor(input) {
+		let init = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+		let parsedURL;
+
+		// normalize input
+		if (!isRequest(input)) {
+			if (input && input.href) {
+				// in order to support Node.js' Url objects; though WHATWG's URL objects
+				// will fall into this branch also (since their `toString()` will return
+				// `href` property anyway)
+				parsedURL = parse_url(input.href);
+			} else {
+				// coerce input to a string before attempting to parse
+				parsedURL = parse_url(`${input}`);
+			}
+			input = {};
+		} else {
+			parsedURL = parse_url(input.url);
+		}
+
+		let method = init.method || input.method || 'GET';
+		method = method.toUpperCase();
+
+		if ((init.body != null || isRequest(input) && input.body !== null) && (method === 'GET' || method === 'HEAD')) {
+			throw new TypeError('Request with GET/HEAD method cannot have body');
+		}
+
+		let inputBody = init.body != null ? init.body : isRequest(input) && input.body !== null ? clone(input) : null;
+
+		Body.call(this, inputBody, {
+			timeout: init.timeout || input.timeout || 0,
+			size: init.size || input.size || 0
+		});
+
+		const headers = new Headers(init.headers || input.headers || {});
+
+		if (inputBody != null && !headers.has('Content-Type')) {
+			const contentType = extractContentType(inputBody);
+			if (contentType) {
+				headers.append('Content-Type', contentType);
+			}
+		}
+
+		let signal = isRequest(input) ? input.signal : null;
+		if ('signal' in init) signal = init.signal;
+
+		if (signal != null && !isAbortSignal(signal)) {
+			throw new TypeError('Expected signal to be an instanceof AbortSignal');
+		}
+
+		this[INTERNALS$2] = {
+			method,
+			redirect: init.redirect || input.redirect || 'follow',
+			headers,
+			parsedURL,
+			signal
+		};
+
+		// node-fetch-only options
+		this.follow = init.follow !== undefined ? init.follow : input.follow !== undefined ? input.follow : 20;
+		this.compress = init.compress !== undefined ? init.compress : input.compress !== undefined ? input.compress : true;
+		this.counter = init.counter || input.counter || 0;
+		this.agent = init.agent || input.agent;
+	}
+
+	get method() {
+		return this[INTERNALS$2].method;
+	}
+
+	get url() {
+		return format_url(this[INTERNALS$2].parsedURL);
+	}
+
+	get headers() {
+		return this[INTERNALS$2].headers;
+	}
+
+	get redirect() {
+		return this[INTERNALS$2].redirect;
+	}
+
+	get signal() {
+		return this[INTERNALS$2].signal;
+	}
+
+	/**
+  * Clone this request
+  *
+  * @return  Request
+  */
+	clone() {
+		return new Request(this);
+	}
+}
+
+Body.mixIn(Request.prototype);
+
+Object.defineProperty(Request.prototype, Symbol.toStringTag, {
+	value: 'Request',
+	writable: false,
+	enumerable: false,
+	configurable: true
+});
+
+Object.defineProperties(Request.prototype, {
+	method: { enumerable: true },
+	url: { enumerable: true },
+	headers: { enumerable: true },
+	redirect: { enumerable: true },
+	clone: { enumerable: true },
+	signal: { enumerable: true }
+});
+
+/**
+ * Convert a Request to Node.js http request options.
+ *
+ * @param   Request  A Request instance
+ * @return  Object   The options object to be passed to http.request
+ */
+function getNodeRequestOptions(request) {
+	const parsedURL = request[INTERNALS$2].parsedURL;
+	const headers = new Headers(request[INTERNALS$2].headers);
+
+	// fetch step 1.3
+	if (!headers.has('Accept')) {
+		headers.set('Accept', '*/*');
+	}
+
+	// Basic fetch
+	if (!parsedURL.protocol || !parsedURL.hostname) {
+		throw new TypeError('Only absolute URLs are supported');
+	}
+
+	if (!/^https?:$/.test(parsedURL.protocol)) {
+		throw new TypeError('Only HTTP(S) protocols are supported');
+	}
+
+	if (request.signal && request.body instanceof Stream.Readable && !streamDestructionSupported) {
+		throw new Error('Cancellation of streamed requests with AbortSignal is not supported in node < 8');
+	}
+
+	// HTTP-network-or-cache fetch steps 2.4-2.7
+	let contentLengthValue = null;
+	if (request.body == null && /^(POST|PUT)$/i.test(request.method)) {
+		contentLengthValue = '0';
+	}
+	if (request.body != null) {
+		const totalBytes = getTotalBytes(request);
+		if (typeof totalBytes === 'number') {
+			contentLengthValue = String(totalBytes);
+		}
+	}
+	if (contentLengthValue) {
+		headers.set('Content-Length', contentLengthValue);
+	}
+
+	// HTTP-network-or-cache fetch step 2.11
+	if (!headers.has('User-Agent')) {
+		headers.set('User-Agent', 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)');
+	}
+
+	// HTTP-network-or-cache fetch step 2.15
+	if (request.compress && !headers.has('Accept-Encoding')) {
+		headers.set('Accept-Encoding', 'gzip,deflate');
+	}
+
+	let agent = request.agent;
+	if (typeof agent === 'function') {
+		agent = agent(parsedURL);
+	}
+
+	if (!headers.has('Connection') && !agent) {
+		headers.set('Connection', 'close');
+	}
+
+	// HTTP-network fetch step 4.2
+	// chunked encoding is handled by Node.js
+
+	return Object.assign({}, parsedURL, {
+		method: request.method,
+		headers: exportNodeCompatibleHeaders(headers),
+		agent
+	});
+}
+
+/**
+ * abort-error.js
+ *
+ * AbortError interface for cancelled requests
+ */
+
+/**
+ * Create AbortError instance
+ *
+ * @param   String      message      Error message for human
+ * @return  AbortError
+ */
+function AbortError(message) {
+  Error.call(this, message);
+
+  this.type = 'aborted';
+  this.message = message;
+
+  // hide custom error implementation details from end-users
+  Error.captureStackTrace(this, this.constructor);
+}
+
+AbortError.prototype = Object.create(Error.prototype);
+AbortError.prototype.constructor = AbortError;
+AbortError.prototype.name = 'AbortError';
+
+// fix an issue where "PassThrough", "resolve" aren't a named export for node <10
+const PassThrough$1 = Stream.PassThrough;
+const resolve_url = Url.resolve;
+
+/**
+ * Fetch function
+ *
+ * @param   Mixed    url   Absolute url or Request instance
+ * @param   Object   opts  Fetch options
+ * @return  Promise
+ */
+function fetch(url, opts) {
+
+	// allow custom promise
+	if (!fetch.Promise) {
+		throw new Error('native promise missing, set fetch.Promise to your favorite alternative');
+	}
+
+	Body.Promise = fetch.Promise;
+
+	// wrap http.request into fetch
+	return new fetch.Promise(function (resolve, reject) {
+		// build request object
+		const request = new Request(url, opts);
+		const options = getNodeRequestOptions(request);
+
+		const send = (options.protocol === 'https:' ? https : http).request;
+		const signal = request.signal;
+
+		let response = null;
+
+		const abort = function abort() {
+			let error = new AbortError('The user aborted a request.');
+			reject(error);
+			if (request.body && request.body instanceof Stream.Readable) {
+				request.body.destroy(error);
+			}
+			if (!response || !response.body) return;
+			response.body.emit('error', error);
+		};
+
+		if (signal && signal.aborted) {
+			abort();
+			return;
+		}
+
+		const abortAndFinalize = function abortAndFinalize() {
+			abort();
+			finalize();
+		};
+
+		// send request
+		const req = send(options);
+		let reqTimeout;
+
+		if (signal) {
+			signal.addEventListener('abort', abortAndFinalize);
+		}
+
+		function finalize() {
+			req.abort();
+			if (signal) signal.removeEventListener('abort', abortAndFinalize);
+			clearTimeout(reqTimeout);
+		}
+
+		if (request.timeout) {
+			req.once('socket', function (socket) {
+				reqTimeout = setTimeout(function () {
+					reject(new FetchError(`network timeout at: ${request.url}`, 'request-timeout'));
+					finalize();
+				}, request.timeout);
+			});
+		}
+
+		req.on('error', function (err) {
+			reject(new FetchError(`request to ${request.url} failed, reason: ${err.message}`, 'system', err));
+			finalize();
+		});
+
+		req.on('response', function (res) {
+			clearTimeout(reqTimeout);
+
+			const headers = createHeadersLenient(res.headers);
+
+			// HTTP fetch step 5
+			if (fetch.isRedirect(res.statusCode)) {
+				// HTTP fetch step 5.2
+				const location = headers.get('Location');
+
+				// HTTP fetch step 5.3
+				const locationURL = location === null ? null : resolve_url(request.url, location);
+
+				// HTTP fetch step 5.5
+				switch (request.redirect) {
+					case 'error':
+						reject(new FetchError(`redirect mode is set to error: ${request.url}`, 'no-redirect'));
+						finalize();
+						return;
+					case 'manual':
+						// node-fetch-specific step: make manual redirect a bit easier to use by setting the Location header value to the resolved URL.
+						if (locationURL !== null) {
+							// handle corrupted header
+							try {
+								headers.set('Location', locationURL);
+							} catch (err) {
+								// istanbul ignore next: nodejs server prevent invalid response headers, we can't test this through normal request
+								reject(err);
+							}
+						}
+						break;
+					case 'follow':
+						// HTTP-redirect fetch step 2
+						if (locationURL === null) {
+							break;
+						}
+
+						// HTTP-redirect fetch step 5
+						if (request.counter >= request.follow) {
+							reject(new FetchError(`maximum redirect reached at: ${request.url}`, 'max-redirect'));
+							finalize();
+							return;
+						}
+
+						// HTTP-redirect fetch step 6 (counter increment)
+						// Create a new Request object.
+						const requestOpts = {
+							headers: new Headers(request.headers),
+							follow: request.follow,
+							counter: request.counter + 1,
+							agent: request.agent,
+							compress: request.compress,
+							method: request.method,
+							body: request.body,
+							signal: request.signal,
+							timeout: request.timeout
+						};
+
+						// HTTP-redirect fetch step 9
+						if (res.statusCode !== 303 && request.body && getTotalBytes(request) === null) {
+							reject(new FetchError('Cannot follow redirect with body being a readable stream', 'unsupported-redirect'));
+							finalize();
+							return;
+						}
+
+						// HTTP-redirect fetch step 11
+						if (res.statusCode === 303 || (res.statusCode === 301 || res.statusCode === 302) && request.method === 'POST') {
+							requestOpts.method = 'GET';
+							requestOpts.body = undefined;
+							requestOpts.headers.delete('content-length');
+						}
+
+						// HTTP-redirect fetch step 15
+						resolve(fetch(new Request(locationURL, requestOpts)));
+						finalize();
+						return;
+				}
+			}
+
+			// prepare response
+			res.once('end', function () {
+				if (signal) signal.removeEventListener('abort', abortAndFinalize);
+			});
+			let body = res.pipe(new PassThrough$1());
+
+			const response_options = {
+				url: request.url,
+				status: res.statusCode,
+				statusText: res.statusMessage,
+				headers: headers,
+				size: request.size,
+				timeout: request.timeout,
+				counter: request.counter
+			};
+
+			// HTTP-network fetch step 12.1.1.3
+			const codings = headers.get('Content-Encoding');
+
+			// HTTP-network fetch step 12.1.1.4: handle content codings
+
+			// in following scenarios we ignore compression support
+			// 1. compression support is disabled
+			// 2. HEAD request
+			// 3. no Content-Encoding header
+			// 4. no content response (204)
+			// 5. content not modified response (304)
+			if (!request.compress || request.method === 'HEAD' || codings === null || res.statusCode === 204 || res.statusCode === 304) {
+				response = new Response(body, response_options);
+				resolve(response);
+				return;
+			}
+
+			// For Node v6+
+			// Be less strict when decoding compressed responses, since sometimes
+			// servers send slightly invalid responses that are still accepted
+			// by common browsers.
+			// Always using Z_SYNC_FLUSH is what cURL does.
+			const zlibOptions = {
+				flush: zlib.Z_SYNC_FLUSH,
+				finishFlush: zlib.Z_SYNC_FLUSH
+			};
+
+			// for gzip
+			if (codings == 'gzip' || codings == 'x-gzip') {
+				body = body.pipe(zlib.createGunzip(zlibOptions));
+				response = new Response(body, response_options);
+				resolve(response);
+				return;
+			}
+
+			// for deflate
+			if (codings == 'deflate' || codings == 'x-deflate') {
+				// handle the infamous raw deflate response from old servers
+				// a hack for old IIS and Apache servers
+				const raw = res.pipe(new PassThrough$1());
+				raw.once('data', function (chunk) {
+					// see http://stackoverflow.com/questions/37519828
+					if ((chunk[0] & 0x0F) === 0x08) {
+						body = body.pipe(zlib.createInflate());
+					} else {
+						body = body.pipe(zlib.createInflateRaw());
+					}
+					response = new Response(body, response_options);
+					resolve(response);
+				});
+				return;
+			}
+
+			// for br
+			if (codings == 'br' && typeof zlib.createBrotliDecompress === 'function') {
+				body = body.pipe(zlib.createBrotliDecompress());
+				response = new Response(body, response_options);
+				resolve(response);
+				return;
+			}
+
+			// otherwise, use response as-is
+			response = new Response(body, response_options);
+			resolve(response);
+		});
+
+		writeToStream(req, request);
+	});
+}
+/**
+ * Redirect code matching
+ *
+ * @param   Number   code  Status code
+ * @return  Boolean
+ */
+fetch.isRedirect = function (code) {
+	return code === 301 || code === 302 || code === 303 || code === 307 || code === 308;
+};
+
+// expose Promise
+fetch.Promise = global.Promise;
+
+function get_page_handler(
+	manifest,
+	session_getter
+) {
+	const get_build_info =  (assets => () => assets)(JSON.parse(fs.readFileSync(path.join(build_dir, 'build.json'), 'utf-8')));
+
+	const template =  (str => () => str)(read_template(build_dir));
+
+	const has_service_worker = fs.existsSync(path.join(build_dir, 'service-worker.js'));
+
+	const { server_routes, pages } = manifest;
+	const error_route = manifest.error;
+
+	function bail(req, res, err) {
+		console.error(err);
+
+		const message =  'Internal server error';
+
+		res.statusCode = 500;
+		res.end(`<pre>${message}</pre>`);
+	}
+
+	function handle_error(req, res, statusCode, error) {
+		handle_page({
+			pattern: null,
+			parts: [
+				{ name: null, component: error_route }
+			]
+		}, req, res, statusCode, error || new Error('Unknown error in preload function'));
+	}
+
+	async function handle_page(page, req, res, status = 200, error = null) {
+		const is_service_worker_index = req.path === '/service-worker-index.html';
+		const build_info
+
+
+
+
+
+
+
+
+
+ = get_build_info();
+
+		res.setHeader('Content-Type', 'text/html');
+
+		// preload main.js and current route
+		// TODO detect other stuff we can preload like fonts?
+		let preload_files = Array.isArray(build_info.assets.main) ? build_info.assets.main : [build_info.assets.main];
+		if (!error && !is_service_worker_index) {
+			page.parts.forEach(part => {
+				if (!part) return;
+
+				// using concat because it could be a string or an array. thanks webpack!
+				preload_files = preload_files.concat(build_info.assets[part.name]);
+			});
+		}
+
+		let es6_preload = false;
+		if (build_info.bundler === 'rollup') {
+
+			es6_preload = true;
+
+			const route = page.parts[page.parts.length - 1].file;
+
+			// JS
+			preload_files = preload_files.concat(build_info.dependencies[route]);
+
+			// CSS
+			preload_files = preload_files.concat(build_info.css.main);
+			preload_files = preload_files.concat(build_info.css.chunks[route]);
+		}
+
+		const link = preload_files
+			.filter((v, i, a) => a.indexOf(v) === i)        // remove any duplicates
+			.filter(file => file && !file.match(/\.map$/))  // exclude source maps
+			.map((file) => {
+				const as = /\.css$/.test(file) ? 'style' : 'script';
+				const rel = es6_preload && as === 'script' ? 'modulepreload' : 'preload';
+				return `<${req.baseUrl}/client/${file}>;rel="${rel}";as="${as}"`;
+			})
+			.join(', ');
+
+		res.setHeader('Link', link);
+
+		let session;
+		try {
+			session = await session_getter(req, res);
+		} catch (err) {
+			return bail(req, res, err);
+		}
+
+		let redirect;
+		let preload_error;
+
+		const preload_context = {
+			redirect: (statusCode, location) => {
+				if (redirect && (redirect.statusCode !== statusCode || redirect.location !== location)) {
+					throw new Error(`Conflicting redirects`);
+				}
+				location = location.replace(/^\//g, ''); // leading slash (only)
+				redirect = { statusCode, location };
+			},
+			error: (statusCode, message) => {
+				preload_error = { statusCode, message };
+			},
+			fetch: (url, opts) => {
+				const parsed = new Url.URL(url, `http://127.0.0.1:${process.env.PORT}${req.baseUrl ? req.baseUrl + '/' :''}`);
+
+				opts = Object.assign({}, opts);
+
+				const include_credentials = (
+					opts.credentials === 'include' ||
+					opts.credentials !== 'omit' && parsed.origin === `http://127.0.0.1:${process.env.PORT}`
+				);
+
+				if (include_credentials) {
+					opts.headers = Object.assign({}, opts.headers);
+
+					const cookies = Object.assign(
+						{},
+						cookie.parse(req.headers.cookie || ''),
+						cookie.parse(opts.headers.cookie || '')
+					);
+
+					const set_cookie = res.getHeader('Set-Cookie');
+					(Array.isArray(set_cookie) ? set_cookie : [set_cookie]).forEach(str => {
+						const match = /([^=]+)=([^;]+)/.exec(str);
+						if (match) cookies[match[1]] = match[2];
+					});
+
+					const str = Object.keys(cookies)
+						.map(key => `${key}=${cookies[key]}`)
+						.join('; ');
+
+					opts.headers.cookie = str;
+
+					if (!opts.headers.authorization && req.headers.authorization) {
+						opts.headers.authorization = req.headers.authorization;
+					}
+				}
+
+				return fetch(parsed.href, opts);
+			}
+		};
+
+		let preloaded;
+		let match;
+		let params;
+
+		try {
+			const root_preload = manifest.root_comp.preload || (() => {});
+			const root_preloaded = root_preload.call(preload_context, {
+					host: req.headers.host,
+					path: req.path,
+					query: req.query,
+					params: {}
+				}, session);
+
+			match = error ? null : page.pattern.exec(req.path);
+
+
+			let toPreload = [root_preloaded];
+			if (!is_service_worker_index) {
+				toPreload = toPreload.concat(page.parts.map(part => {
+					if (!part) return null;
+
+					// the deepest level is used below, to initialise the store
+					params = part.params ? part.params(match) : {};
+
+					return part.component.preload
+						? part.component.preload.call(preload_context, {
+							host: req.headers.host,
+							path: req.path,
+							query: req.query,
+							params
+						}, session)
+						: {};
+				}));
+			}
+
+			preloaded = await Promise.all(toPreload);
+		} catch (err) {
+			if (error) {
+				return bail(req, res, err)
+			}
+
+			preload_error = { statusCode: 500, message: err };
+			preloaded = []; // appease TypeScript
+		}
+
+		try {
+			if (redirect) {
+				const location = Url.resolve((req.baseUrl || '') + '/', redirect.location);
+
+				res.statusCode = redirect.statusCode;
+				res.setHeader('Location', location);
+				res.end();
+
+				return;
+			}
+
+			if (preload_error) {
+				handle_error(req, res, preload_error.statusCode, preload_error.message);
+				return;
+			}
+
+			const segments = req.path.split('/').filter(Boolean);
+
+			// TODO make this less confusing
+			const layout_segments = [segments[0]];
+			let l = 1;
+
+			page.parts.forEach((part, i) => {
+				layout_segments[l] = segments[i + 1];
+				if (!part) return null;
+				l++;
+			});
+
+			const props = {
+				stores: {
+					page: {
+						subscribe: writable({
+							host: req.headers.host,
+							path: req.path,
+							query: req.query,
+							params
+						}).subscribe
+					},
+					preloading: {
+						subscribe: writable(null).subscribe
+					},
+					session: writable(session)
+				},
+				segments: layout_segments,
+				status: error ? status : 200,
+				error: error ? error instanceof Error ? error : { message: error } : null,
+				level0: {
+					props: preloaded[0]
+				},
+				level1: {
+					segment: segments[0],
+					props: {}
+				}
+			};
+
+			if (!is_service_worker_index) {
+				let l = 1;
+				for (let i = 0; i < page.parts.length; i += 1) {
+					const part = page.parts[i];
+					if (!part) continue;
+
+					props[`level${l++}`] = {
+						component: part.component.default,
+						props: preloaded[i + 1] || {},
+						segment: segments[i]
+					};
+				}
+			}
+
+			const { html, head, css } = App.render(props);
+
+			const serialized = {
+				preloaded: `[${preloaded.map(data => try_serialize(data, err => {
+					console.error(`Failed to serialize preloaded data to transmit to the client at the /${segments.join('/')} route: ${err.message}`);
+					console.warn('The client will re-render over the server-rendered page fresh instead of continuing where it left off. See https://sapper.svelte.dev/docs#Return_value for more information');
+				})).join(',')}]`,
+				session: session && try_serialize(session, err => {
+					throw new Error(`Failed to serialize session data: ${err.message}`);
+				}),
+				error: error && serialize_error(props.error)
+			};
+
+			let script = `__SAPPER__={${[
+				error && `error:${serialized.error},status:${status}`,
+				`baseUrl:"${req.baseUrl}"`,
+				serialized.preloaded && `preloaded:${serialized.preloaded}`,
+				serialized.session && `session:${serialized.session}`
+			].filter(Boolean).join(',')}};`;
+
+			if (has_service_worker) {
+				script += `if('serviceWorker' in navigator)navigator.serviceWorker.register('${req.baseUrl}/service-worker.js');`;
+			}
+
+			const file = [].concat(build_info.assets.main).filter(file => file && /\.js$/.test(file))[0];
+			const main = `${req.baseUrl}/client/${file}`;
+
+			if (build_info.bundler === 'rollup') {
+				if (build_info.legacy_assets) {
+					const legacy_main = `${req.baseUrl}/client/legacy/${build_info.legacy_assets.main}`;
+					script += `(function(){try{eval("async function x(){}");var main="${main}"}catch(e){main="${legacy_main}"};var s=document.createElement("script");try{new Function("if(0)import('')")();s.src=main;s.type="module";s.crossOrigin="use-credentials";}catch(e){s.src="${req.baseUrl}/client/shimport@${build_info.shimport}.js";s.setAttribute("data-main",main);}document.head.appendChild(s);}());`;
+				} else {
+					script += `var s=document.createElement("script");try{new Function("if(0)import('')")();s.src="${main}";s.type="module";s.crossOrigin="use-credentials";}catch(e){s.src="${req.baseUrl}/client/shimport@${build_info.shimport}.js";s.setAttribute("data-main","${main}")}document.head.appendChild(s)`;
+				}
+			} else {
+				script += `</script><script src="${main}" defer>`;
+			}
+
+			let styles;
+
+			// TODO make this consistent across apps
+			// TODO embed build_info in placeholder.ts
+			if (build_info.css && build_info.css.main) {
+				const css_chunks = new Set();
+				if (build_info.css.main) css_chunks.add(build_info.css.main);
+				page.parts.forEach(part => {
+					if (!part) return;
+					const css_chunks_for_part = build_info.css.chunks[part.file];
+
+					if (css_chunks_for_part) {
+						css_chunks_for_part.forEach(file => {
+							css_chunks.add(file);
+						});
+					}
+				});
+
+				styles = Array.from(css_chunks)
+					.map(href => `<link rel="stylesheet" href="client/${href}">`)
+					.join('');
+			} else {
+				styles = (css && css.code ? `<style>${css.code}</style>` : '');
+			}
+
+			// users can set a CSP nonce using res.locals.nonce
+			const nonce_attr = (res.locals && res.locals.nonce) ? ` nonce="${res.locals.nonce}"` : '';
+
+			const body = template()
+				.replace('%sapper.base%', () => `<base href="${req.baseUrl}/">`)
+				.replace('%sapper.scripts%', () => `<script${nonce_attr}>${script}</script>`)
+				.replace('%sapper.html%', () => html)
+				.replace('%sapper.head%', () => head)
+				.replace('%sapper.styles%', () => styles);
+
+			res.statusCode = status;
+			res.end(body);
+		} catch(err) {
+			if (error) {
+				bail(req, res, err);
+			} else {
+				handle_error(req, res, 500, err);
+			}
+		}
+	}
+
+	return function find_route(req, res, next) {
+		if (req.path === '/service-worker-index.html') {
+			const homePage = pages.find(page => page.pattern.test('/'));
+			handle_page(homePage, req, res);
+			return;
+		}
+
+		for (const page of pages) {
+			if (page.pattern.test(req.path)) {
+				handle_page(page, req, res);
+				return;
+			}
+		}
+
+		handle_error(req, res, 404, 'Not found');
+	};
+}
+
+function read_template(dir = build_dir) {
+	return fs.readFileSync(`${dir}/template.html`, 'utf-8');
+}
+
+function try_serialize(data, fail) {
+	try {
+		return devalue(data);
+	} catch (err) {
+		if (fail) fail(err);
+		return null;
+	}
+}
+
+// Ensure we return something truthy so the client will not re-render the page over the error
+function serialize_error(error) {
+	if (!error) return null;
+	let serialized = try_serialize(error);
+	if (!serialized) {
+		const { name, message, stack } = error ;
+		serialized = try_serialize({ name, message, stack });
+	}
+	if (!serialized) {
+		serialized = '{}';
+	}
+	return serialized;
+}
+
+function middleware(opts
+
+
+ = {}) {
+	const { session, ignore } = opts;
+
+	let emitted_basepath = false;
+
+	return compose_handlers(ignore, [
+		(req, res, next) => {
+			if (req.baseUrl === undefined) {
+				let { originalUrl } = req;
+				if (req.url === '/' && originalUrl[originalUrl.length - 1] !== '/') {
+					originalUrl += '/';
+				}
+
+				req.baseUrl = originalUrl
+					? originalUrl.slice(0, -req.url.length)
+					: '';
+			}
+
+			if (!emitted_basepath && process.send) {
+				process.send({
+					__sapper__: true,
+					event: 'basepath',
+					basepath: req.baseUrl
+				});
+
+				emitted_basepath = true;
+			}
+
+			if (req.path === undefined) {
+				req.path = req.url.replace(/\?.*/, '');
+			}
+
+			next();
+		},
+
+		fs.existsSync(path.join(build_dir, 'service-worker.js')) && serve({
+			pathname: '/service-worker.js',
+			cache_control: 'no-cache, no-store, must-revalidate'
+		}),
+
+		fs.existsSync(path.join(build_dir, 'service-worker.js.map')) && serve({
+			pathname: '/service-worker.js.map',
+			cache_control: 'no-cache, no-store, must-revalidate'
+		}),
+
+		serve({
+			prefix: '/client/',
+			cache_control:  'max-age=31536000, immutable'
+		}),
+
+		get_server_route_handler(manifest.server_routes),
+
+		get_page_handler(manifest, session || noop$1)
+	].filter(Boolean));
+}
+
+function compose_handlers(ignore, handlers) {
+	const total = handlers.length;
+
+	function nth_handler(n, req, res, next) {
+		if (n >= total) {
+			return next();
+		}
+
+		handlers[n](req, res, () => nth_handler(n+1, req, res, next));
+	}
+
+	return !ignore
+		? (req, res, next) => nth_handler(0, req, res, next)
+		: (req, res, next) => {
+			if (should_ignore(req.path, ignore)) {
+				next();
+			} else {
+				nth_handler(0, req, res, next);
+			}
+		};
+}
+
+function should_ignore(uri, val) {
+	if (Array.isArray(val)) return val.some(x => should_ignore(uri, x));
+	if (val instanceof RegExp) return val.test(uri);
+	if (typeof val === 'function') return val(uri);
+	return uri.startsWith(val.charCodeAt(0) === 47 ? val : `/${val}`);
+}
+
+function serve({ prefix, pathname, cache_control }
+
+
+
+) {
+	const filter = pathname
+		? (req) => req.path === pathname
+		: (req) => req.path.startsWith(prefix);
+
+	const cache = new Map();
+
+	const read =  (file) => (cache.has(file) ? cache : cache.set(file, fs.readFileSync(path.join(build_dir, file)))).get(file);
+
+	return (req, res, next) => {
+		if (filter(req)) {
+			const type = lite.getType(req.path);
+
+			try {
+				const file = path.posix.normalize(decodeURIComponent(req.path));
+				const data = read(file);
+
+				res.setHeader('Content-Type', type);
+				res.setHeader('Cache-Control', cache_control);
+				res.end(data);
+			} catch (err) {
+				if (err.code === 'ENOENT') {
+					next();
+				} else {
+					console.error(err);
+
+					res.statusCode = 500;
+					res.end('an error occurred while reading a static file from disk');
+				}
+			}
+		} else {
+			next();
+		}
+	};
+}
+
+function noop$1(){}
+
+const { PORT, NODE_ENV } = process.env;
+const dev = NODE_ENV === 'development';
+
+polka() // You can also use Express
+	.use(
+		compression({ threshold: 0 }),
+		sirv('static', { dev }),
+		middleware()
+	)
+	.listen(PORT, err => {
+		if (err) console.log('error', err);
+	});
