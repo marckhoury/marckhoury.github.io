@@ -55,6 +55,21 @@
 
 <svelte:head>
     <script>
+        window.MathJax = {
+	        tex: {inlineMath: [['$$', '$$'], ['\\[', '\\]'], ['\\(', '\\)']]}
+        };
+        MathJaxDone = new Promise((resolve, reject) => {
+	        window.MathJax = {
+		        startup: {
+			        pageReady() {
+				        return MathJax.startup.defaultPageReady().then(resolve);
+			        }
+		        }
+	        }
+        });
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>	
+    <script>
         var disqus_config = function () {
             let tokens = window.location.href.split('/');
             this.page.url = window.location.href;
