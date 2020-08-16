@@ -67,7 +67,7 @@ If you're interested in science I'd recommend you check out a stream and ask que
 
 <h2>FDLG</h2>
 <p>
-During quarantine my friend and I created <a href="https://fdlg.herokuapp.com/">Furthest Distance Lunch Groups</a>, coordinated Zoom lunches for students. Students sign up and each week we pair them with 3 other random students to virtually meet up for lunch over Zoom. We started in UC Berkeley, but soon expanded to nearly 400 students from CMU, UW, Georgia Tech, UPenn, Princeton, Cornell, UIUC, UChicago, NYU, and others. Our goal was to provide more social interaction for people stuck at home as well as an opportunity to meet new people with different interests. It was good opportunity to learn Javascript and Node.js, and to use technology for some good. 
+During quarantine my friend and I created <a href="https://fdlg.herokuapp.com/">Furthest Distance Lunch Groups</a>, coordinated Zoom lunches for students. Students sign up and each week we pair them with 3 other random students to virtually meet up for lunch over Zoom. We started in UC Berkeley, but soon expanded to nearly 400 students from CMU, UW, Georgia Tech, UPenn, Princeton, Cornell, UIUC, UChicago, NYU, and others. Our goal was to provide more social interaction for people stuck at home as well as an opportunity to meet new people with different interests. It was a good opportunity to learn Javascript and Node.js, and to use technology for some good. 
 </p>
 
 <p>
